@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Sign up</title>
+    <style media="screen">
+
+      .centered {
+        display: inline;;   /* Allow the centering to work */
+      	margin: 0 auto;
+        text-align: center;
+
+      }
+
+      ul {
+        list-style-type: none;
+      }
+      .h1 {
+
+      }
+    </style>
+
+    <script type="text/javascript">
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+
+      function signUp() {
+        let xhr = createCORSRequest("POST", "http://localhost:3000/user");
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.withCredentials = false;
+        let fn = document.getElementById('fn');
+        let ln = document.getElementById('ln');
+        let un = document.getElementById('un');
+        let pw = document.getElementById('pw');
+
+        xhr.onload = function() {
+         var responseText = xhr.responseText;
+
+         if (Number(responseText) == 201) {
+           window.alert("Account created!");
+
+           localStorage.setItem('username', un.value);
+           localStorage.setItem('token', pw.value);
+
+           window.location.href = '../';
+
+         } else if (Number(responseText) == 403) {
+           window.alert("Username taken.");
+         }
+         // process the response.
+        };
+
+        let user = {
+          nameFirst: "first name",
+          nameLast: "last name",
+          username: "username",
+          password: "password",
+          do: "createUser"
+        };
+
+        user.nameFirst = fn.value;
+        user.nameLast = ln.value;
+        user.username = un.value;
+        user.password = pw.value;
+
+        xhr.send(JSON.stringify(user));
+      }
+    </script>
+  </head>
+  <body>
+    <div class="centered">
+      <ul>
+        <li><h1>Welcome! Let's get started.</h1></li>
+        <li><input type="text" placeholder="First Name" id="fn"></input></li>
+        <li><input type="text" placeholder="Last Name" id="ln"></input></li>
+        <li><input type="text" placeholder="Username" id="un"></input></li>
+        <li><input type="password" placeholder="Password" id="pw"></input></li>
+        <li><button type="submit" onclick="signUp()">Continue</button></li>
+      </ul>
+    </div>
+  </body>
+</html>

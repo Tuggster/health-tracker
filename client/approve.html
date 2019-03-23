@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Approve requests</title>
+
+    <style media="screen">
+      th, td, table {
+        border: 1px solid #ddd;
+        border-spacing: 0px;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      th, td {
+        padding: 15px;
+        text-align: left;
+      }
+    </style>
+
+    <script type="text/javascript">
+
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+
+    </script>
+  </head>
+  <body>
+    <h1 id="name">Activity completion requests for "default"</h1>
+    <h2 id="idf"></h2>
+    <table id="table">
+      <tr>
+        <th>Username</th>
+        <th>Activity name</th>
+        <th>Activity description</th>
+        <th>User story</th>
+        <th>Date of submission</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+    <script type="text/javascript" name="data-manager">
+      let name = document.getElementById('name');
+      let id = document.getElementById('idf');
+      let currentClass;
+      let currentUser;
+
+      let table = document.getElementById('table')
+
+      let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClass&classID=${getParameterByName("id")}`);
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+          let response = JSON.parse(responseText);
+
+          if (response.id != getParameterByName("id")) {
+            return console.log("id mismatch!");
+          } else {
+            currentClass = response;
+            name.innerHTML = `Activity completion requests for "${currentClass.name}"`;
+            id.innerHTML = `ID: ${currentClass.id}`;
+          }
+
+          for (let i = 0; i < currentClass.members.length; i++) {
+            let member = currentClass.members[i];
+
+            if (member.profile.username == localStorage.getItem("username")) {
+              currentUser = member;
+            }
+          }
+
+          setTable();
+
+        }
+        xhr.send();
+
+    </script>
+
+    <script type="text/javascript" name="table-manager">
+      function setTable() {
+        for (let i = 0; i < currentClass.approval_pool.length; i++) {
+          let request = currentClass.approval_pool[i];
+
+          let row = table.insertRow(1);
+          row.insertCell(0).innerHTML = request.author;
+          row.insertCell(1).innerHTML = request.activity.title;
+          row.insertCell(2).innerHTML = request.activity.details;
+          row.insertCell(3).innerHTML = request.story;
+          row.insertCell(4).innerHTML = request.date;
+          row.insertCell(5).innerHTML = `\<button onclick="approveRequest(${i})"\>Approve\</button\> <button onclick="denyRequest(${i})"\>Deny\</button\>`;
+
+        }
+      }
+    </script>
+  </body>
+</html>

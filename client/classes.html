@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Class Management</title>
+    <style media="screen">
+      th, td {
+        border-bottom: 1px solid #ddd;
+        border-left: 1px solid #ddd;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      th, td {
+        padding: 15px;
+        text-align: left;
+      }
+    </style>
+
+
+  </head>
+  <body>
+    <h2 style="float: right; display: inline-block; padding-left: 20px;"><button onclick="createClass()">Create class</button></h2>
+    <h2 style="float: right; display: inline-block; padding-left: 20px;"><button onclick="joinClass()">Join class</button></h2>
+
+    <table class="class-table" id="tab">
+      <tr>
+        <th>Class name</th>
+        <th>Member count</th>
+        <th>Controls</th>
+      </tr>
+    </table>
+
+
+    <script type="text/javascript">
+
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+
+      let username = localStorage.getItem("username");
+      let table = document.getElementById('tab');
+
+      if (username) {
+        getClasses();
+      }
+
+      function createClass() {
+        let className = prompt("Enter your class's name.");
+
+        if (className == null) {
+          return;
+        } else {
+          if (className == "") {
+            createClass();
+            return;
+          }
+        }
+
+        let xhr = createCORSRequest("POST", "http://localhost:3000/class");
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        let classData = {
+          className: "defaultClass",
+          username: "user",
+          do: "createClass"
+        }
+
+        classData.className = className;
+        classData.username = username;
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+
+          if (Number(responseText) == 201)
+            alert("done good")
+
+          location.reload();
+        };
+
+        xhr.send(JSON.stringify(classData));
+      }
+
+      function joinClass() {
+        let id = prompt("Enter the ID for the class you're joining.");
+
+        if (id == null) {
+          return;
+        } else if (id == "") {
+          return joinClass();
+        } else {
+          let xhr = createCORSRequest("POST", "http://localhost:3000/class");
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+          xhr.onload = function() {
+            let response = xhr.responseText;
+            if (Number(response) == 200) {
+              console.log("Joined new class!");
+            }
+
+            location.reload();
+
+          }
+
+          let msg = {
+              classID: 14234213412312412,
+              username: "Tuggi",
+              do: "joinClass"
+          }
+
+          msg.classID = id;
+          msg.username = username;
+          xhr.send(JSON.stringify(msg));
+        }
+
+      }
+
+      function getClasses() {
+        let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClasses&username=${username}`);
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+          let response = JSON.parse(responseText);
+          let servers = response.classes;
+          console.log(response);
+
+          for (let i = 0; i < servers.length; i++) {
+            let row = table.insertRow();
+            row.insertCell(0).innerHTML = servers[i].name;
+            row.insertCell(1).innerHTML = servers[i].members.length;
+            row.insertCell(2).innerHTML = `<a href="../client/class.html?id=${servers[i].id}">View</a>`;
+          }
+
+        }
+
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>

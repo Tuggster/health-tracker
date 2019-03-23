@@ -1,0 +1,18 @@
+{
+  "name": "project3",
+  "version": "1.0.0",
+  "description": "A webapp for school",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tuggi",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite-pool": "^0.2.2",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "enmap": "^4.8.1",
+    "express": "^4.16.4"
+  }
+}
