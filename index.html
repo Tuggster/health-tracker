@@ -118,7 +118,7 @@
     }
 
     function useToken() {
-      let xhr = createCORSRequest("GET", `http://localhost:3000/user?username=${username}&token=${token}&do=logintoken`);
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/user?username=${username}&token=${token}&do=logintoken`);
 
       xhr.onload = function() {
        var responseText = xhr.responseText;
@@ -149,7 +149,7 @@
       let username = document.getElementById('un');
       let password = document.getElementById('pw');
 
-      let xhr = createCORSRequest("GET", `http://localhost:3000/user?username=${un.value}&password=${pw.value}&do=login`);
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/user?username=${un.value}&password=${pw.value}&do=login`);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
 

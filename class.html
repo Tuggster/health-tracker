@@ -60,7 +60,7 @@
       let currentClass;
       let currentUser;
 
-      let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClass&classID=${getParameterByName("id")}`);
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;
@@ -178,7 +178,7 @@
           value: value
         }
 
-        let xhr = createCORSRequest("POST", `http://localhost:3000/class?do=addActivity&classID=${currentClass.id}`);
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addActivity&classID=${currentClass.id}`);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {
@@ -207,7 +207,7 @@
       }
 
       function submitActivity() {
-        let xhr = createCORSRequest("POST", `http://localhost:3000/class?do=submitActivity&classID=${currentClass.id}`);
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {

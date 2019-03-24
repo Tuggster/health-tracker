@@ -60,7 +60,7 @@
       let currentClass;
       let currentUser;
 
-      let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClass&classID=${getParameterByName("id")}`);
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
 
       xhr.onload = function() {
         var responseText = xhr.responseText;

@@ -68,7 +68,7 @@
           }
         }
 
-        let xhr = createCORSRequest("POST", "http://localhost:3000/class");
+        let xhr = createCORSRequest("POST", "http://18.220.203.155:8080/class");
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         let classData = {
@@ -100,7 +100,7 @@
         } else if (id == "") {
           return joinClass();
         } else {
-          let xhr = createCORSRequest("POST", "http://localhost:3000/class");
+          let xhr = createCORSRequest("POST", "http://18.220.203.155:8080/class");
           xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
           xhr.onload = function() {
@@ -127,7 +127,7 @@
       }
 
       function getClasses() {
-        let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClasses&username=${username}`);
+        let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClasses&username=${username}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;
