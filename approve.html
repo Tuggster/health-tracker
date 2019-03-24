@@ -109,9 +109,26 @@
           row.insertCell(2).innerHTML = request.activity.details;
           row.insertCell(3).innerHTML = request.story;
           row.insertCell(4).innerHTML = request.date;
-          row.insertCell(5).innerHTML = `\<button onclick="approveRequest(${i})"\>Approve\</button\> <button onclick="denyRequest(${i})"\>Deny\</button\>`;
+          row.insertCell(5).innerHTML = `\<button onclick="modifyRequest(${i}, true)"\>Approve\</button\> <button onclick="modifyRequest(${i}, false)"\>Deny\</button\>`;
 
         }
+      }
+
+      function modifyRequest(id, approved) {
+        let request = currentClass.approval_pool[id];
+        let user = request.author;
+
+        let xhr = createCORSRequest("POST", `http://localhost:3000/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
+
+          xhr.onload = function() {
+            var responseText = xhr.responseText;
+
+            if (responseText == "Created") {
+              location.reload();
+            }
+          }
+          xhr.send();
+
       }
     </script>
   </body>

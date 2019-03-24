@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>User Profile</title>
+
+    <script type="text/javascript">
+
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+
+    </script>
+
+    <style media="screen">
+      th, td, table {
+        border: 1px solid #ddd;
+        border-spacing: 0px;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      th, td {
+        padding: 15px;
+        text-align: left;
+      }
+    </style>
+
+  </head>
+  <body>
+    <div class="title">
+      <h1 style="margin-bottom: 0px" id="username">Username</h1>
+      <h2 style="margin-top: 4px" id="fullname">First Last</h2>
+
+      <script type="text/javascript">
+      let username = document.getElementById('username');
+      let fullname = document.getElementById('fullname');
+      let currentClass;
+      let currentUser;
+
+      let xhr = createCORSRequest("GET", `http://localhost:3000/class?do=getClass&classID=${getParameterByName("id")}`);
+
+      xhr.onload = function() {
+        var responseText = xhr.responseText;
+        let response = JSON.parse(responseText);
+
+        if (response.id != getParameterByName("id")) {
+          return console.log("id mismatch!");
+        } else {
+          currentClass = response;
+        }
+
+        for (let i = 0; i < currentClass.members.length; i++) {
+          let member = currentClass.members[i];
+
+          if (member.profile.username == getParameterByName("user")) {
+            currentUser = member;
+          }
+        }
+
+        username.innerHTML = currentUser.profile.username;
+        fullname.innerHTML = `${currentUser.profile.nameFirst} ${currentUser.profile.nameLast}`;
+
+        setTable();
+      }
+      xhr.send();
+
+
+      </script>
+    </div>
+
+    <br><br> <h1>Activity History</h1>
+    <table id="table">
+      <tr>
+        <th>Activity name</th>
+        <th>Activity description</th>
+        <th>Activity value</th>
+        <th>User story</th>
+        <th>Submission date</th>
+        <th>Approved?</th>
+      </tr>
+    </table>
+
+    <script type="text/javascript">
+    function setTable() {
+      let user;
+      for (let i = 0; i < currentClass.members.length; i++) {
+        let mem = currentClass.members[i];
+        if (mem.profile.username == getParameterByName("user")) {
+          user = mem;
+        }
+      }
+
+      for (let i = 0; i < user.history.length; i++) {
+        let request = user.history[i];
+
+        let row = table.insertRow(1);
+        row.insertCell(0).innerHTML = request.activity.title;
+        row.insertCell(1).innerHTML = request.activity.details;
+        row.insertCell(2).innerHTML = `${request.activity.value} pts`;
+        row.insertCell(3).innerHTML = request.story;
+        row.insertCell(4).innerHTML = request.date;
+        if (request.approved == true) {
+          row.insertCell(5).innerHTML = `\<p style="color:green"\>Yes!\<p\>`;
+        } else {
+          row.insertCell(5).innerHTML = `\<p style="color:red"\>No.\<p\>`;
+        }
+
+      }
+    }
+
+    </script>
+  </body>
+</html>

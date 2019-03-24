@@ -61,7 +61,6 @@ const activitySubmissionTemplate = {
 
 
 app.listen(3000, function() {
-  console.log(`Example app listening on port 3000!`);
 });
 
 app.get('/user', function (req, res) {
@@ -97,7 +96,7 @@ app.get('/user', function (req, res) {
 });
 
 app.post('/user', function(req, res) {
-  console.log(req.body);
+  console.log("Recieved post to /user");
 
    if (req.body.do == "createUser") {
      if (req.body) {
@@ -126,7 +125,7 @@ app.post('/class', function (req, res) {
     if (req.body) {
       createClass(req.body.className, enmap.get(req.body.username));
       res.sendStatus(201);
-      console.log("begun.")
+      console.log("begun creating class.")
     }
   }
 
@@ -156,6 +155,8 @@ app.post('/class', function (req, res) {
 
       let temp = {
         username: user.username,
+        nameFirst: user.nameFirst,
+        nameLast: user.nameLast,
         id: user.id,
         classes: user.classes
       };
@@ -186,9 +187,7 @@ app.post('/class', function (req, res) {
         value: req.body.value
       }
 
-      console.log(currentClass);
       currentClass.activities.push(active);
-      console.log(currentClass);
       classes.set(currentClass.id, currentClass);
       res.send(202);
     } else {
@@ -198,7 +197,8 @@ app.post('/class', function (req, res) {
 
   if (req.query.do == "submitActivity") {
     let currentClass = classes.get(req.query.classID);
-    console.log(req.body);
+    console.log(`Submitting activity!
+    name: ${req.body.author}`);
     if (req.body.activity) {
       /*
         const activitySubmissionTemplate = {
@@ -222,6 +222,43 @@ app.post('/class', function (req, res) {
       res.sendStatus(201);
     }
   }
+
+
+  if (req.query.do == "modifyRequest") {
+    let id = req.query.activityID;
+    let currentClass = classes.get(req.query.classID);
+    let approved = req.query.approved;
+    let act = currentClass.approval_pool[id];
+    let user = enmap.get(act.author);
+    let classUserID;
+
+
+    for (let i = 0; i < currentClass.members.length; i++) {
+      let u = currentClass.members[i];
+
+      if (u.profile.username == act.author) {
+        user = u;
+      }
+    }
+
+    if (approved == "true") {
+      act.approved = true;
+      user.score += Number(currentClass.approval_pool[id].activity.value);
+    } else {
+      act.approved = false;
+    }
+
+    user.history.push(act);
+    currentClass.history.push(act);
+    currentClass.members[classUserID] = user;
+    currentClass.approval_pool.splice(id, 1);
+    console.log(`Spliced ${id}!`)
+
+    console.log(currentClass.activity_pool);
+
+    classes.set(currentClass.id, currentClass);
+    res.sendStatus(201);
+  }
 })
 
 app.get('/class', function(req, res) {
@@ -239,7 +276,7 @@ app.get('/class', function(req, res) {
       ret.classes.push(classes.get(String(user.classes[i])));
     }
 
-    console.log(ret);
+
     res.send(JSON.stringify(ret));
   }
 
@@ -278,6 +315,8 @@ function createClass(className, creator) {
 
       let temp = {
         username: creator.username,
+        nameFirst: creator.nameFirst,
+        nameLast: creator.nameLast,
         id: creator.id,
         classes: creator.classes
       };
@@ -291,7 +330,6 @@ function createClass(className, creator) {
       creator.classes.push(rand);
       enmap.set(creator.username, creator);
       classes.set(rand, classSend);
-      console.log(classTemplate);
       break;
     }
   }

@@ -53,6 +53,7 @@
     <div class="" name="title-bar">
       <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px">Horse Lounge</h1>
       <h2 id="idf" style="padding-top: 5px; margin: 0px">ID: awdawdawdawd</h2>
+
       <script type="text/javascript">
       let name = document.getElementById('name');
       let id = document.getElementById('idf');
@@ -96,6 +97,8 @@
         <th>Score</th>
       </tr>
     </table>
+    <h2 style="margin-bottom: 0px">Activities</h2>
+    <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p>
     <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../client/approve.html?classID">View activity requests (0 unread)</a></div><br>
     <table id="activity-table" style="display:inline-block">
       <tr>
@@ -134,9 +137,7 @@
 
           row.insertCell(1).innerHTML = `${member.score} pts`;
 
-          if (currentUser.teacher) {
-            row.insertCell(2).innerHTML = `promote\nkick\ngive points`;
-          }
+          row.insertCell(2).innerHTML = `\<a href="../client/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
         }
 
         if (!currentUser.teacher) {
@@ -166,7 +167,10 @@
         if (details == null) return;
 
         let value = prompt("Enter activity value.\n(The points a user will receive upon completion.)");
-        if (details == null) return;
+        if (value == null) return;
+        if (isNaN(Number(value))) {
+          return alert("Aborted! Please provide a number value.");
+        }
 
         let activity = {
           title: title,
@@ -228,7 +232,7 @@
         */
 
         let act = {
-          author: currentUser.nickname,
+          author: currentUser.profile.username,
           story: storyBox.value,
           date: new Date(),
           activity: selectedActivity,
