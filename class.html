@@ -99,7 +99,7 @@
     </table>
     <h2 style="margin-bottom: 0px">Activities</h2>
     <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p>
-    <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../client/approve.html?classID">View activity requests (0 unread)</a></div><br>
+    <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a></div><br>
     <table id="activity-table" style="display:inline-block">
       <tr>
         <th>Name</th>
@@ -137,7 +137,7 @@
 
           row.insertCell(1).innerHTML = `${member.score} pts`;
 
-          row.insertCell(2).innerHTML = `\<a href="../client/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+          row.insertCell(2).innerHTML = `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
         }
 
         if (!currentUser.teacher) {
