@@ -47,7 +47,7 @@
         xhr.onload = function() {
          var responseText = xhr.responseText;
 
-         if (Number(responseText) == 201) {
+         if (Number(responseText) == "Created") {
            window.alert("Account created!");
 
            localStorage.setItem('username', un.value);

@@ -63,6 +63,7 @@
     <div class="header">
       <h1 style="display: inline-block;">Welcome!</h1>
 
+      <h2 style="display: inline-block; float: right; margin-left: 25px"><button type="button" name="button" onclick="signOut()">Sign out</button></h2>
       <h2 style="display: inline-block; float: right" id="classview"><a href="classes.html">View classes</a></h2>
       <div class="popup" id="sibu" style = "display: inline-block;  float: right">
         <h2 onclick="myFunction()" style="margin-right: 15px">Sign in!</h2>
@@ -78,6 +79,12 @@
         function myFunction() {
           var popup = document.getElementById("myPopup");
           popup.classList.toggle("show");
+        }
+
+        function signOut() {
+          localStorage.removeItem('username');
+          localStorage.removeItem('token');
+          location.reload();
         }
       </script>
     </div>
