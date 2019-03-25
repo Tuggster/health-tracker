@@ -60,8 +60,12 @@ const activitySubmissionTemplate = {
 }
 
 
-app.listen(3000, function() {
+app.listen(8080, function() {
 });
+
+app.get(`/`, function (req,res) {
+	res.send("You've reached pizza hut, how may I help you?");
+})
 
 app.get('/user', function (req, res) {
   if (req.query.do == "login") {

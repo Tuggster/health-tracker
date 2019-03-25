@@ -47,6 +47,11 @@ typings/
 # Optional npm cache directory
 .npm
 
+# data
+data/
+*.sqlite
+*.bak
+
 # Optional eslint cache
 .eslintcache
 
