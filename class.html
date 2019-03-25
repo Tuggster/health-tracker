@@ -144,7 +144,7 @@
           adminPanel.style.display = "none";
         } else {
           approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`
-          approveButton.href = `../client/approve.html?id=${currentClass.id}`
+          approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
         }
 
         console.log(currentClass.activities)

@@ -47,13 +47,13 @@
         xhr.onload = function() {
          var responseText = xhr.responseText;
 
-         if (Number(responseText) == "Created") {
+         if (responseText == "Created") {
            window.alert("Account created!");
 
            localStorage.setItem('username', un.value);
            localStorage.setItem('token', pw.value);
 
-           window.location.href = '../';
+           window.location.href = '../health-tracker/index.html';
 
          } else if (Number(responseText) == 403) {
            window.alert("Username taken.");
