@@ -36,6 +36,11 @@ const classTemplate = {
   id: 3461247827
 };
 
+const classGoal = {
+  goal_name: "Goal Template",
+  goal_points: 1500
+};
+
 const classMember = {
   profile: userProfile,
   nickname: "HamyIsBoss",
@@ -262,6 +267,31 @@ app.post('/class', function (req, res) {
 
     classes.set(currentClass.id, currentClass);
     res.sendStatus(201);
+  }
+
+  if (req.query.do == "addGoal") {
+    let class = classes.get(req.query.classID);
+
+    if (cl && req.body) {
+      let goal = {
+        goal_name: "",
+        goal_points: 0,
+        goal_progress: 0
+      }
+
+      goal.goal_name = req.body.name;
+      goal.goal_points = req.body.points;
+      goal.progress = 0;
+
+      if (!cl.settings.goals) {
+        cl.settings.goals = Array();
+      }
+      cl.settings.goals.push(goal);
+      res.send(cl);
+      classes.set(cl.id, cl);
+    } else {
+      res.sendStatus(404);
+    }
   }
 })
 

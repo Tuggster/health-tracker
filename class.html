@@ -47,6 +47,15 @@
         padding: 15px;
         text-align: left;
       }
+
+      .goal-title {
+        display: inline-block;
+        margin-right: 15px;
+      }
+
+      .goal-value {
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
@@ -83,12 +92,92 @@
           }
 
           setTable();
+          loadGoals();
 
         }
         xhr.send();
 
 
       </script>
+    </div>
+
+    <div class="goal-tracker" style="margin-bottom:25px">
+
+      <script type="text/javascript" name="goal-manager">
+
+        let addButton;
+        let goalTable;
+
+        function loadGoals() {
+          let goals = currentClass.settings.goals;
+
+          goalTable = document.getElementById('goal-table');
+          addButton = document.getElementById('add-goal');
+
+          if (currentUser.teacher) {
+            addButton.style = "inline-block;"
+          } else {
+            addButton.style = "none";
+          }
+
+          if (!goals) {
+            return noGoals();
+          }
+
+          if (goals.length > 0) {
+            for (let i = 0; i < goals.length; i++) {
+              let g = goals[i];
+
+              let row = goalTable.insertRow();
+              row.innerHTML = `\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((g.goal_points / g.goal_progress) * 100)} pts" max="100" style="width: 25%" class="goal-value"\>\</progress\>\<br\>`
+            }
+          } else {
+            noGoals();
+          }
+        }
+
+        function noGoals() {
+          goalTable.insertRow().innerHTML = "No class goals.";
+        }
+
+        function addGoal() {
+          let goalTitle = prompt("Enter your goal's title.");
+          if (goalTitle == undefined || !goalTitle) {
+            return addGoal();
+          }
+
+          let goalTarget = prompt("Enter your goal's required point gain.");
+          if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
+            return addGoal();
+          }
+
+          let goal = {
+            name: goalTitle,
+            points: goalTarget
+          }
+
+          let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addGoal&classID=${currentClass.id}`);
+
+          xhr.onload = function () {
+            let response = xhr.responseText;
+
+            if (response.toLowerCase() == "not found") {
+              alert(`Failed to create goal!`);
+            } else {
+              alert(`Goal created succesfully!`);
+            }
+          }
+        }
+      </script>
+
+      <br>
+      <h2 style="margin-bottom: 0px">Goals</h2> <button type="button" id="add-goal" onclick="addGoal()" style="display: none;">Add Goal</button>
+      <table id="goal-table">
+        <!-- <tr> Example goal display
+          <p class="goal-title">Those pizzas   (750pts / 1500 pts)</p> <progress value="50" max="100" style="width: 25%" class="goal-value"></progress>
+          <br>
+        </tr> -->
+      </table>
     </div>
 
     <table id="user-table">
