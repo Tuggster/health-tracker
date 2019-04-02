@@ -287,8 +287,9 @@ app.post('/class', function (req, res) {
         cl.settings.goals = Array();
       }
       cl.settings.goals.push(goal);
-      res.send(cl);
       classes.set(cl.id, cl);
+      console.log(cl);
+      res.send(cl);
     } else {
       res.sendStatus(404);
     }
