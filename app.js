@@ -318,7 +318,15 @@ app.get('/class', function(req, res) {
   if (req.query.do == "getClass" && req.query.classID) {
     let targetClass = classes.get(req.query.classID);
     if (targetClass) {
+
+      if (!targetClass.settings[0]) {
+        targetClass.settings.push({
+          goals: Array();
+        })
+      }
+
       res.send(JSON.stringify(targetClass));
+      classes.set(req.query.classID, targetClass);
     }
   }
 });
