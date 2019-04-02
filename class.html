@@ -109,7 +109,7 @@
         let goalTable;
 
         function loadGoals() {
-          let goals = currentClass.settings.goals;
+          let goals = currentClass.settings[0].goals;
 
           goalTable = document.getElementById('goal-table');
           addButton = document.getElementById('add-goal');
@@ -129,7 +129,11 @@
               let g = goals[i];
 
               let row = goalTable.insertRow();
-              row.innerHTML = `\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((g.goal_points / g.goal_progress) * 100)} pts" max="100" style="width: 25%" class="goal-value"\>\</progress\>\<br\>`
+              if (g.goal_progress >= g.goal_points) {
+                row.innerHTML = `\<p\>${g.goal_name}: Completed!\<p\>`
+              } else {
+                row.innerHTML = `\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
+              }
             }
           } else {
             noGoals();
@@ -143,20 +147,21 @@
         function addGoal() {
           let goalTitle = prompt("Enter your goal's title.");
           if (goalTitle == undefined || !goalTitle) {
-            return addGoal();
+            return alert("Failed");
           }
 
           let goalTarget = prompt("Enter your goal's required point gain.");
           if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
-            return addGoal();
+            return alert("Failed");
           }
 
-          let goal = {
+          let newGoal = {
             name: goalTitle,
             points: goalTarget
           }
 
           let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addGoal&classID=${currentClass.id}`);
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
           xhr.onload = function () {
             let response = xhr.responseText;
@@ -167,12 +172,14 @@
               alert(`Goal created succesfully!`);
             }
           }
+
+          xhr.send(JSON.stringify(newGoal));
         }
       </script>
 
       <br>
       <h2 style="margin-bottom: 0px">Goals</h2> <button type="button" id="add-goal" onclick="addGoal()" style="display: none;">Add Goal</button>
-      <table id="goal-table">
+      <table id="goal-table" style="width: 50%">
         <!-- <tr> Example goal display
           <p class="goal-title">Those pizzas   (750pts / 1500 pts)</p> <progress value="50" max="100" style="width: 25%" class="goal-value"></progress>
           <br>
