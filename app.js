@@ -36,6 +36,11 @@ const classTemplate = {
   id: 3461247827
 };
 
+const classGoal = {
+  goal_name: "Goal Template",
+  goal_points: 1500
+};
+
 const classMember = {
   profile: userProfile,
   nickname: "HamyIsBoss",
@@ -248,6 +253,13 @@ app.post('/class', function (req, res) {
     if (approved == "true") {
       act.approved = true;
       user.score += Number(currentClass.approval_pool[id].activity.value);
+	  if(currentClass.settings[0]) {
+		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
+		  let g = currentClass.settings[0].goals[i];
+		  
+		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
+		}
+	  }
     } else {
       act.approved = false;
     }
@@ -262,6 +274,37 @@ app.post('/class', function (req, res) {
 
     classes.set(currentClass.id, currentClass);
     res.sendStatus(201);
+  }
+
+  if (req.query.do == "addGoal") {
+    let cl = classes.get(req.query.classID);
+
+    if (cl && req.body) {
+	  console.log(req.body);
+      let goal = {
+        goal_name: "",
+        goal_points: 0,
+        goal_progress: 0
+      }
+
+      goal.goal_name = req.body.name;
+      goal.goal_points = req.body.points;
+      goal.progress = 0;
+
+      if (!cl.settings[0]) {
+        cl.settings.push({
+			goals: Array()
+		});
+      }
+	  
+      cl.settings[0].goals.push(goal);
+	  console.log(cl.settings[0].goals)
+      classes.set(Number(req.query.classID), cl);
+      console.log(classes.get(req.query.classID));
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
   }
 })
 
@@ -287,7 +330,15 @@ app.get('/class', function(req, res) {
   if (req.query.do == "getClass" && req.query.classID) {
     let targetClass = classes.get(req.query.classID);
     if (targetClass) {
+
+      if (!targetClass.settings[0]) {
+        targetClass.settings.push({
+          goals: Array()
+        })
+      }
+
       res.send(JSON.stringify(targetClass));
+      classes.set(req.query.classID, targetClass);
     }
   }
 });
@@ -328,6 +379,10 @@ function createClass(className, creator) {
       teacher.profile = temp;
       teacher.teacher = true;
       teacher.nickname = creator.username;
+	  
+	  cl.settings.push() = {
+		goals: Array()
+	  };
 
       classSend.members = Array(teacher);
 
