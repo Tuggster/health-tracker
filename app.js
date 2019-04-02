@@ -270,7 +270,7 @@ app.post('/class', function (req, res) {
   }
 
   if (req.query.do == "addGoal") {
-    let class = classes.get(req.query.classID);
+    let cl = classes.get(req.query.classID);
 
     if (cl && req.body) {
       let goal = {
