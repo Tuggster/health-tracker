@@ -333,7 +333,7 @@ app.get('/class', function(req, res) {
 
       if (!targetClass.settings[0]) {
         targetClass.settings.push({
-          goals: Array();
+          goals: Array()
         })
       }
 
