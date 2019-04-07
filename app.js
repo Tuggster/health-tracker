@@ -186,6 +186,18 @@ app.post('/class', function (req, res) {
     }
   }
 
+  if (req.query.do == "removeActivity") {
+    let currentClass = classes.get(req.query.classID);
+    let act = class.activities[req.query.activityID];
+
+    if (act && currentClass) {
+      currentClass.activities.splice(act, 1);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
   if (req.query.do == "addActivity") {
     let currentClass = classes.get(req.query.classID);
 
@@ -256,7 +268,7 @@ app.post('/class', function (req, res) {
 	  if(currentClass.settings[0]) {
 		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
 		  let g = currentClass.settings[0].goals[i];
-		  
+
 		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
 		}
 	  }
@@ -296,7 +308,7 @@ app.post('/class', function (req, res) {
 			goals: Array()
 		});
       }
-	  
+
       cl.settings[0].goals.push(goal);
 	  console.log(cl.settings[0].goals)
       classes.set(Number(req.query.classID), cl);
@@ -379,7 +391,7 @@ function createClass(className, creator) {
       teacher.profile = temp;
       teacher.teacher = true;
       teacher.nickname = creator.username;
-	  
+
 	  cl.settings.push() = {
 		goals: Array()
 	  };

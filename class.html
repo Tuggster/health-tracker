@@ -251,7 +251,7 @@
           row.insertCell(0).innerHTML = event.title;
           row.insertCell(1).innerHTML = event.details;
           row.insertCell(2).innerHTML = event.value + " points";
-          row.insertCell(3).innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>`;
+          row.insertCell(3).innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`;
         }
       }
 
@@ -300,6 +300,13 @@
         submitPanel.style.display = "inline-block";
         selectedActivity = currentClass.activities[act];
         console.log(selectedActivity);
+      }
+
+      function deleteActivity(act) {
+        selectedActivity = currentClass.activities[act];
+        console.log(selectedActivity);
+
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=removeActivity&classID=${currentClass.id}&activityID=${selectedActivity}`);
       }
 
       function submitActivity() {
