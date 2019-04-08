@@ -188,14 +188,19 @@ app.post('/class', function (req, res) {
 
   if (req.query.do == "removeActivity") {
     let currentClass = classes.get(req.query.classID);
-    let act = class.activities[req.query.activityID];
+    let act = currentClass.activities[req.query.activityID];
 
+	console.log(act);
+	console.log(currentClass.activities);
+	
     if (act && currentClass) {
-      currentClass.activities.splice(act, 1);
+      currentClass.activities.splice(req.query.activityID, 1);
       res.sendStatus(200);
     } else {
       res.sendStatus(404);
     }
+	
+	classes.set(req.query.classID, currentClass);
   }
 
   if (req.query.do == "addActivity") {
