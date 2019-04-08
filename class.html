@@ -248,10 +248,14 @@
           let event = currentClass.activities[i];
           let row = activitytable.insertRow(1);
 
-          row.insertCell(0).innerHTML = event.title;
+          row.insertCell(0).innerHTML = event.title + i;
           row.insertCell(1).innerHTML = event.details;
           row.insertCell(2).innerHTML = event.value + " points";
-          row.insertCell(3).innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`;
+          let r3 = row.insertCell(3)
+            r3.innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>`;
+          if (currentUser.teacher) {
+            r3.innerHTML += `\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`
+          }
         }
       }
 
@@ -302,11 +306,19 @@
         console.log(selectedActivity);
       }
 
-      function deleteActivity(act) {
+      function removeActivity(act) {
         selectedActivity = currentClass.activities[act];
         console.log(selectedActivity);
+        console.log(act);
 
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=removeActivity&classID=${currentClass.id}&activityID=${selectedActivity}`);
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=removeActivity&classID=${currentClass.id}&activityID=${act}`);
+
+        xhr.onload = function() {
+          console.log(`removed activity ${act}`);
+        };
+
+        xhr.send();
+        location.reload();
       }
 
       function submitActivity() {
