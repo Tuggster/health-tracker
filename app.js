@@ -190,16 +190,16 @@ app.post('/class', function (req, res) {
     let currentClass = classes.get(req.query.classID);
     let act = currentClass.activities[req.query.activityID];
 
-	console.log(act);
-	console.log(currentClass.activities);
-	
+  	console.log(act);
+  	console.log(currentClass.activities);
+
     if (act && currentClass) {
       currentClass.activities.splice(req.query.activityID, 1);
       res.sendStatus(200);
     } else {
       res.sendStatus(404);
     }
-	
+
 	classes.set(req.query.classID, currentClass);
   }
 
@@ -248,7 +248,6 @@ app.post('/class', function (req, res) {
       res.sendStatus(201);
     }
   }
-
 
   if (req.query.do == "modifyRequest") {
     let id = req.query.activityID;
@@ -322,6 +321,10 @@ app.post('/class', function (req, res) {
     } else {
       res.sendStatus(404);
     }
+  }
+
+  if (req.query.do == "setNickname") {
+    let 
   }
 })
 
