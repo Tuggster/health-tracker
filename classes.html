@@ -36,6 +36,9 @@
 
     <script type="text/javascript">
 
+      let href = location.href;
+      let url = href.replace(/(^\w+:|^)\/\//, '');
+
       function createCORSRequest(method, url) {
         var xhr = new XMLHttpRequest();
         if ("withCredentials" in xhr) {
@@ -139,7 +142,12 @@
             let row = table.insertRow();
             row.insertCell(0).innerHTML = servers[i].name;
             row.insertCell(1).innerHTML = servers[i].members.length;
-            row.insertCell(2).innerHTML = `<a href="../health-tracker/class.html?id=${servers[i].id}">View</a>`;
+
+            if (!url.startsWith(`18.220`)) {
+              row.insertCell(2).innerHTML = `<a href="../health-tracker/class.html?id=${servers[i].id}">View</a>`;
+            } else {
+              row.insertCell(2).innerHTML = `<a href="../class.html?id=${servers[i].id}">View</a>`;
+            }
           }
 
         }
