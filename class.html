@@ -105,6 +105,9 @@
 
       <script type="text/javascript" name="goal-manager">
 
+        let href = location.href;
+        let url = href.replace(/(^\w+:|^)\/\//, '');
+
         let addButton;
         let goalTable;
 
@@ -233,7 +236,11 @@
 
           row.insertCell(1).innerHTML = `${member.score} pts`;
 
-          row.insertCell(2).innerHTML = `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+          if (!url.startsWith(`18.220`)) {
+            row.insertCell(2).innerHTML = `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+          } else {
+            row.insertCell(2).innerHTML = `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+          }
         }
 
         if (!currentUser.teacher) {
@@ -241,6 +248,10 @@
         } else {
           approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`
           approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
+        }
+
+        if (url.startsWith(`18.220`)) {
+          approveButton.style.display = "none";
         }
 
         console.log(currentClass.activities)
@@ -297,6 +308,8 @@
       let adminPanel = document.getElementById('admin-buttons');
 
       let approveButton = document.getElementById('approve-button');
+
+
 
       let selectedActivity;
 
