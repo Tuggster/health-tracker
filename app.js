@@ -15,6 +15,7 @@ var cors = require('cors');
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(cors());
+app.use(express.static('../health-tracker'))
 
 const userProfile = {
   nameFirst: "John",
@@ -400,9 +401,9 @@ function createClass(className, creator) {
       teacher.teacher = true;
       teacher.nickname = creator.username;
 
-	  cl.settings.push() = {
+	  classSend.settings.push({
 		goals: Array()
-	  };
+	  });
 
       classSend.members = Array(teacher);
 
