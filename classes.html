@@ -23,6 +23,11 @@
         border-style: solid;
         border-color: rgb(25, 25, 25, 0.25);
       }
+
+      a {color:#190000;}      /* unvisited link */
+      a:visited {color:#190000;}  /* visited link */
+      a:hover {color:#FF00FF;}  /* mouse over link */
+      a:active {color:#190000;}  /* selected link */
     </style>
 
 
@@ -154,15 +159,49 @@
           console.log(response);
 
           for (let i = 0; i < servers.length; i++) {
-            let row = table.insertRow();
-            row.insertCell(0).innerHTML = servers[i].name;
-            row.insertCell(1).innerHTML = servers[i].members.length;
+            // let row = table.insertRow();
+            // row.insertCell(0).innerHTML = servers[i].name;
+            // row.insertCell(1).innerHTML = servers[i].members.length;
 
+
+            let link;
             if (!url.startsWith(`18.220`)) {
-              row.insertCell(2).innerHTML = `<a href="../health-tracker/class.html?id=${servers[i].id}">View</a>`;
+              link = `../health-tracker/class.html?id=${servers[i].id}`;
             } else {
-              row.insertCell(2).innerHTML = `<a href="../class.html?id=${servers[i].id}">View</a>`;
+              link = `../class.html?id=${servers[i].id}`;
             }
+
+            let user;
+            for (let j = 0; j < servers[i].members.length; j++) {
+              if (servers[i].members[j].profile.username == username)
+                user = servers[i].members[j];
+            }
+
+            let closesGoal;
+            let largest = 0;
+
+            if (servers[i].settings[0].goals.length > 0) {
+
+              for (let j = 0; j < servers[i].settings[0].goals.length; j++) {
+                let goal = servers[i].settings[0].goals[j];
+                let percent = (goal.goal_progress / goal.goal_points) * 100
+                if (percent > largest && percent < 100) {
+                  largest = Math.floor(percent);
+                }
+              }
+            }
+
+
+            let entry = `
+            \<div class="class-container"\>
+              \<a href="${link}"\>\<h1 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].name}\</h1\>\</a\>
+              \<h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].members.length} members - ${user.score} points\</h2\>
+              \<h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>Closest goal: ${largest}%\</h2\>
+
+            \</div\>
+            `
+
+            classDiv.innerHTML += entry;
           }
 
         }
