@@ -88,3 +88,4 @@ data/
 
 # DynamoDB Local files
 .dynamodb/
+data/enmap.sqlite
