@@ -49,6 +49,9 @@
 
     <script type="text/javascript">
 
+      let href = location.href;
+      let url = href.replace(/(^\w+:|^)\/\//, '');
+
       function createCORSRequest(method, url) {
         var xhr = new XMLHttpRequest();
         if ("withCredentials" in xhr) {
@@ -151,26 +154,15 @@
           console.log(response);
 
           for (let i = 0; i < servers.length; i++) {
-            // let row = table.insertRow();
-            // row.insertCell(0).innerHTML = servers[i].name;
-            // row.insertCell(1).innerHTML = servers[i].members.length;
-            // row.insertCell(2).innerHTML = `<a href="../health-tracker/class.html?id=${servers[i].id}">View</a>`;
+            let row = table.insertRow();
+            row.insertCell(0).innerHTML = servers[i].name;
+            row.insertCell(1).innerHTML = servers[i].members.length;
 
-            let user;
-            for (let j = 0; j < servers[i].members.length; j++) {
-              if (servers[i].members[j].profile.username == username)
-                user = servers[i].members[j];
+            if (!url.startsWith(`18.220`)) {
+              row.insertCell(2).innerHTML = `<a href="../health-tracker/class.html?id=${servers[i].id}">View</a>`;
+            } else {
+              row.insertCell(2).innerHTML = `<a href="../class.html?id=${servers[i].id}">View</a>`;
             }
-
-            let entry = `
-            \<div class="class-container"\>
-              \<h1 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>\<a\>${servers[i].name}\</a>\</h1\>
-              \<h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].members.length} members - ${user.score} points\</h2\>
-            \</div\>
-            `
-
-            classDiv.innerHTML += entry;
-
           }
 
         }
