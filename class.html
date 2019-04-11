@@ -247,12 +247,11 @@
           adminPanel.style.display = "none";
         } else {
           approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`
-          approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
-        }
-
-        if (url.startsWith(`18.220`)) {
-          approveButton.style.display = "none";
-          adminPanel.innerHTML += ` Approving requests is not currently supported on mobile.`
+          if (url.startsWith(`18.220`)) {
+            approveButton.href = `../approve.html?id=${currentClass.id}`
+          } else {
+            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
+          }
         }
 
         console.log(currentClass.activities)
