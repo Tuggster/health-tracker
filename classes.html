@@ -24,32 +24,84 @@
         border-color: rgb(25, 25, 25, 0.25);
       }
 
-      a {color:#190000;}      /* unvisited link */
-      a:visited {color:#190000;}  /* visited link */
-      a:hover {color:#FF00FF;}  /* mouse over link */
-      a:active {color:#190000;}  /* selected link */
+      .bg {
+        display: block;
+        position:absolute;
+        height:auto;
+        bottom:0;
+        top:0;
+        left:0;
+        right:0;
+        margin-top:0px;
+        margin-bottom:0px;
+        margin-right:90px;
+        margin-left:90px;
+        background-color: rgb(12, 12, 12);
+      }
+
+      .container {
+        padding-left: 50px;
+        padding-right: 50px;
+        padding-top: 25px;
+        color: rgb(173, 173, 173);
+      }
+
+      .inline {
+        display: inline-block;
+        padding-right: 25px;
+        font-style: italic;
+        font-weight: lighter;
+      }
+
+      a {
+        color:#FFFFFF;
+        text-decoration: none;
+        font-style: normal;
+      }      /* unvisited link */
+      a:visited {color:#FFFFFF;}  /* visited link */
+      a:hover {color:#FFFFFF;}  /* mouse over link */
+      a:active {color:#FFFFFF;}  /* selected link */
+
+      button {
+           background:none!important;
+           color:inherit;
+           border:none;
+           padding:0!important;
+           font: inherit;
+           /*border is optional*/
+           border-bottom:1px solid #444;
+           cursor: pointer;
+      }
     </style>
 
 
   </head>
-  <body>
-    <h2 style="float: right; display: inline-block; padding-left: 20px;"><button onclick="createClass()">Create class</button></h2>
-    <h2 style="float: right; display: inline-block; padding-left: 20px;"><button onclick="joinClass()">Join class</button></h2>
+  <body style="background-color: #0a0a0a">
 
-    <!-- <table class="class-table" id="tab">
-      <tr>
-        <th>Class name</th>
-        <th>Member count</th>
-        <th>Controls</th>
-      </tr>
-    </table> -->
 
-    <div class="classes" id="classes">
-      <!-- <div class="class-container">
-        <h1 style="padding-bottom: 0px; padding-top: 0px; margin: 0px">Waterhole VII</h1>
-        <h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px">5 members - 1200 points</h2>
-      </div> -->
+    <div class="bg">
+      <div class="container">
+        <div class="header">
+          <h1 class="inline" style="float: left;">Classes</h1>
+          <h2 class="inline" style="float: right;"><button onclick="createClass()">Create class</button></h2>
+          <h2 class="inline" style="float: right;"><button onclick="joinClass()">Join class</button></h2>
+        </div><p>&nbsp;</p><p>&nbsp;</p>
+        <div class="classes" id="classes">
+          <!-- <div class="class-container">
+            <h1 style="padding-bottom: 0px; padding-top: 0px; margin: 0px">Waterhole VII</h1>
+            <h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px">5 members - 1200 points</h2>
+          </div> -->
+        </div>
+      </div>
+
     </div>
+
+
+
+<!--
+    <div class="classes" id="classes">
+
+    </div> -->
 
 
     <script type="text/javascript">
@@ -193,11 +245,11 @@
 
 
             let entry = `
-            \<div class="class-container"\>
+            \<div class="class-container" style="background-color:rgb(37,37,37); margin-bottom: 10px"\>
               \<a href="${link}"\>\<h1 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].name}\</h1\>\</a\>
-              \<h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].members.length} members - ${user.score} points\</h2\>
-              \<h2 style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>Closest goal: ${largest}%\</h2\>
-
+              \<p style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${servers[i].members.length} members\</p\>
+              \<p style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>${user.score} points\</p\>
+              \<p style="padding-bottom: 0px; padding-top: 0px; margin: 0px"\>Closest goal is ${largest}% complete\</p\>
             \</div\>
             `
 
