@@ -122,7 +122,7 @@
           if (!url.startsWith(`18.220`)) {
             temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
           } else {
-            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>View history\`;
+            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
           }
 
           if (member.teacher) {
@@ -143,7 +143,7 @@
           if (url.startsWith(`18.220`)) {
             approveButton.href = `../approve.html?id=${currentClass.id}`
           } else {
-            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
+            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
           }
         }
 
@@ -276,17 +276,18 @@
       let addButton;
       let goalBox;
 
+      if (currentUser.teacher) {
+        addButton.style = "inline-block;"
+      } else {
+        addButton.style = "none";
+      }
+
       function loadGoals() {
         let goals = currentClass.settings[0].goals;
 
         goalBox = document.getElementById('goal-box');
         addButton = document.getElementById('add-goal');
 
-        if (currentUser.teacher) {
-          addButton.style = "inline-block;"
-        } else {
-          addButton.style = "none";
-        }
 
         if (!goals) {
           return noGoals();
