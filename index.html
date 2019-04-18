@@ -213,6 +213,10 @@
     </div>
 
 
+	<script>
+		if ()
+	</script>
+	
     <script type="text/javascript">
 
       window.mobilecheck = function() {
@@ -224,8 +228,8 @@
       let href = location.href;
       let url = href.replace(/(^\w+:|^)\/\//, '');
 
-      if (window.mobilecheck() && !url.startsWith(`18.220`)) {
-        window.location.href = "http://18.220.203.155:8080/index.html";
+      if (url.startsWith("tuggster")) {
+	   window.location.href = "http://18.220.203.155:8080/index.html";
       }
 
       var username = localStorage.getItem('username');
