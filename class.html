@@ -282,11 +282,11 @@
         addButton = document.getElementById('add-goal');
 
         if (currentUser.teacher) {
-          addButton.style = "inline-block;"
+          addButton.style.display = "inline-block;"
         } else {
-          addButton.style = "none";
+          addButton.style.display = "none";
         }
-        
+
         if (!goals) {
           return noGoals();
         }
