@@ -131,9 +131,6 @@
             temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
           }
           userbox.innerHTML+= temp;
-
-
-
         }
 
         if (!currentUser.teacher) {
@@ -276,11 +273,7 @@
       let addButton;
       let goalBox;
 
-      if (currentUser.teacher) {
-        addButton.style = "inline-block;"
-      } else {
-        addButton.style = "none";
-      }
+
 
       function loadGoals() {
         let goals = currentClass.settings[0].goals;
@@ -288,7 +281,12 @@
         goalBox = document.getElementById('goal-box');
         addButton = document.getElementById('add-goal');
 
-
+        if (currentUser.teacher) {
+          addButton.style = "inline-block;"
+        } else {
+          addButton.style = "none";
+        }
+        
         if (!goals) {
           return noGoals();
         }
