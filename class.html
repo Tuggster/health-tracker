@@ -78,7 +78,7 @@
 
     </div> <br>
 
-    <h2 style="color:white; margin-left:27px">Users (4):</h2>
+    <h2 style="color:white; margin-left:27px" id="user-count">Users (4):</h2>
     <div class="" style="margin-left:27px; color: white; font-size: 15pt" id="user-box">
     </div>
 
@@ -106,7 +106,10 @@
     <script type="text/javascript" name="table-manager">
       function setTable() {
         let userbox = document.getElementById('user-box');
+        let userCount = document.getElementById('user-count');
         let activitytable = document.getElementById('activity-table');
+
+        userCount.innerHTML = `Users: (${currentClass.members.length})`;
 
         // for (let i = 0; i < currentClass.teachers.length; i++) {
         //   let row = usertable.insertRow();
@@ -114,6 +117,15 @@
         //   row.insertCell(0).innerHTML = `<p style="color:red;">★ ${currentClass.teachers[i].nickname}</p>`;
         //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
         // }
+
+        let highestScore = 0;
+        for (let i = 0; i < currentClass.members.length; i++) {
+          let member = currentClass.members[i];
+
+          if (member.score > highestScore) {
+            highestScore = member.score;
+          }
+        }
 
         for (let i = 0; i < currentClass.members.length; i++) {
           let member = currentClass.members[i];
@@ -128,7 +140,11 @@
           if (member.teacher) {
             temp += `<p style="color:red">★ ${member.nickname}: ${member.score} pts</p>\</a\>`;
           } else {
-            temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
+            if (member.score == highestScore) {
+              temp += `<p style="color:gold">🎖 ${member.nickname}: ${member.score} pts 🎖<p>\</a\>`;
+            } else {
+              temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
+            }
           }
           userbox.innerHTML+= temp;
         }
@@ -136,7 +152,7 @@
         if (!currentUser.teacher) {
           adminPanel.style.display = "none";
         } else {
-          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`
+          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
           if (url.startsWith(`18.220`)) {
             approveButton.href = `../approve.html?id=${currentClass.id}`
           } else {
@@ -206,6 +222,8 @@
       function prepareActivity(act) {
         submitPanel.style.display = "inline-block";
         selectedActivity = currentClass.activities[act];
+        titleBox.innerHTML = `${selectedActivity.title}`;
+        window.scrollTo(0,document.body.scrollHeight);
         console.log(selectedActivity);
       }
 
@@ -285,7 +303,7 @@
           addButton.style.display = "inline-block"
           console.log("Teacher, displaying button");
         } else {
-          console.log("Teacher, hiding button");
+          console.log("Student, hiding button");
           addButton.style.display = "none";
         }
 
@@ -313,7 +331,7 @@
       }
 
       function noGoals() {
-        goalBox.innerHTML = "No class goals.";
+        goalBox.innerHTML = "No class goals. Encourage your teacher to add one!";
       }
 
       function toggleGoals() {
