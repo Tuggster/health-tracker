@@ -241,6 +241,7 @@ app.post('/class', function (req, res) {
         story: req.body.story,
         date: req.body.date,
         activity: req.body.activity,
+		img: req.body.img,
         approved: false
       }
 
@@ -363,6 +364,8 @@ app.get('/class', function(req, res) {
     }
   }
 });
+
+
 
 function createClass(className, creator) {
   let rand = getRandomInt(9999999999);
