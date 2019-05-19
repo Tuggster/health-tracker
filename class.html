@@ -268,8 +268,8 @@
         let imgEncoded;
 
         if (img.files[0]) {
-          if (img.files[0].size > 100000) {
-            alert("Max image size 100kb. Sorry! :(");
+          if (img.files[0].size > 50000000) {
+            alert("Max image size 50mb. Sorry! :(");
             return;
           }
           encodeImageFileAsURL(img, function(result) {

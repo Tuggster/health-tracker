@@ -6,7 +6,7 @@ const enmap = new Enmap({name: "scores"});
 const classes = new Enmap({name: "classes"});
 
 var bodyParser = require('body-parser')
-app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.json({limit: '50mb'}));       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
