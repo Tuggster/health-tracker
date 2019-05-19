@@ -325,7 +325,7 @@ app.post('/class', function (req, res) {
   }
 
   if (req.query.do == "setNickname") {
-    let 
+    let
   }
 })
 

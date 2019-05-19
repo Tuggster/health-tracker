@@ -6,6 +6,15 @@
 
     <script type="text/javascript">
 
+      var weekday = new Array(7);
+      weekday[0] =  "Sunday";
+      weekday[1] = "Monday";
+      weekday[2] = "Tuesday";
+      weekday[3] = "Wednesday";
+      weekday[4] = "Thursday";
+      weekday[5] = "Friday";
+      weekday[6] = "Saturday";
+
       function getParameterByName(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, '\\$&');
@@ -27,6 +36,16 @@
           xhr = null;
         }
         return xhr;
+      }
+
+      function encodeImageFileAsURL(element, callback) {
+        var file = element.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          console.log('RESULT', reader.result);
+          callback(reader.result);
+        }
+        reader.readAsDataURL(file);
       }
 
     </script>
@@ -66,7 +85,7 @@
     <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
       <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px; font-size: 35pt">Horse Lounge</h1>
       <h2 id="idf" style="padding-top: 5px; margin: 0px; float:left">ID: awdawdawdawd</h2>
-      <h2 id="idf" style="margin-left: 15px; margin-top: 4px; float:left; color:white"> <button type="button" name="button" style="border:none; background-color:transparent; color: white;" onclick="toggleGoals()">Click to show/hide goals</button></h2>
+      <h2 id="hidebtn" style="margin-left: 15px; margin-top: 4px; float:left; color:white"> <button type="button" name="button" style="border:none; background-color:transparent; color: white;" onclick="toggleGoals()">Click to show/hide goals</button></h2>
     </div><br><br>
 
     <div class="goal-tracker" style="color: white; margin-left: 27px">
@@ -98,6 +117,7 @@
       <div class="submit-activity" style="display:none" id="submit-panel">
         <em><p id="activity-name-box">name</p></em>
         <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
+        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <br>
         <button type="submit" name="button" onclick="submitActivity()">Submit</button>
       </div>
     </div>
@@ -244,6 +264,26 @@
 
       function submitActivity() {
         let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
+        let img = document.getElementById(`image-upload`);
+        let imgEncoded;
+
+        if (img.files[0]) {
+          if (img.files[0].size > 100000) {
+            alert("Max image size 100kb. Sorry! :(");
+            return;
+          }
+          encodeImageFileAsURL(img, function(result) {
+            if (result) {
+              imgEncoded = result.split(`,`)[1];
+              console.log(imgEncoded);
+              submitWithImage(result);
+            }
+          });
+          return;
+        }
+
+
+
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {
@@ -267,13 +307,70 @@
           }
         */
 
+        let date = new Date();
+
+        var n = weekday[date.getDay()];
+
+        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+        console.log(dateFormatted);
         let act = {
           author: currentUser.profile.username,
           story: storyBox.value,
-          date: new Date(),
+          date: dateFormatted,
           activity: selectedActivity,
+          img: "none",
           approved: false
         }
+
+        let temp = {
+          water: "hole"
+        }
+
+        xhr.send(JSON.stringify(act));
+      }
+
+      function submitWithImage(result) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
+
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+
+          if (responseText == "Created") {
+            alert("Success!");
+            submitPanel.style.display = "none";
+          } else {
+            alert("Failed to submit activity!");
+          }
+
+        }
+
+        /*
+          const activitySubmissionTemplate = {
+            author: "Tuggi",
+            story: "I did a walking",
+            date: new Date(),
+            approved: false
+          }
+        */
+
+        let date = new Date();
+
+        var n = weekday[date.getDay()];
+
+        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+        console.log(dateFormatted);
+        let act = {
+          author: currentUser.profile.username,
+          story: storyBox.value,
+          date: dateFormatted,
+          activity: selectedActivity,
+          img: "none",
+          approved: false
+        }
+
+        act.img = result;
 
         let temp = {
           water: "hole"
