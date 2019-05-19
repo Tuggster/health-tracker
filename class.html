@@ -37,7 +37,7 @@
         }
         return xhr;
       }
-	  
+
 	  function toDataURL(url, callback) {
 		  var xhr = new XMLHttpRequest();
 		  xhr.onload = function() {
@@ -131,7 +131,7 @@
       <div class="submit-activity" style="display:none" id="submit-panel">
         <em><p id="activity-name-box">name</p></em>
         <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
-        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <br>
+        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
         <button type="submit" name="button" onclick="submitActivity()">Submit</button>
       </div>
     </div>
