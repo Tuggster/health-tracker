@@ -17,6 +17,9 @@ app.use(express.json());       // to support JSON-encoded bodies
 app.use(cors());
 app.use(express.static('../health-tracker'))
 
+Date.prototype.toUnixTime = function() { return this.getTime()/1000|0 };
+Date.time = function() { return new Date().toUnixTime(); }
+
 const userProfile = {
   nameFirst: "John",
   nameLast: "Smith",
@@ -236,12 +239,17 @@ app.post('/class', function (req, res) {
         }
       */
 
+      var fs = require("fs");
+      let fn = `${req.body.author}${new Date().time()}`;
+
+      fs.writeFile(`img/${fn}`, new Buffer(request.body.img, "base64"), function(err) {});
+
       let act = {
         author: req.body.author,
         story: req.body.story,
         date: req.body.date,
         activity: req.body.activity,
-		img: req.body.img,
+		    img: `http://18.220.203.155:8080/img/${fn}.png`,
         approved: false
       }
 
