@@ -48,9 +48,10 @@ typings/
 .npm
 
 # data
-data/
 *.sqlite
 *.bak
+img/
+data/
 
 # Optional eslint cache
 .eslintcache

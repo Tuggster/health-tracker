@@ -4,6 +4,8 @@ const app = express();
 const Enmap = require("enmap");
 const enmap = new Enmap({name: "scores"});
 const classes = new Enmap({name: "classes"});
+var fs = require("fs");
+
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json({limit: '50mb'}));       // to support JSON-encoded bodies
@@ -239,19 +241,36 @@ app.post('/class', function (req, res) {
         }
       */
 
-      var fs = require("fs");
-      let fn = `${req.body.author}${new Date().time()}`;
-
-      fs.writeFile(`img/${fn}`, new Buffer(request.body.img, "base64"), function(err) {});
-
       let act = {
         author: req.body.author,
         story: req.body.story,
         date: req.body.date,
         activity: req.body.activity,
-		    img: `http://18.220.203.155:8080/img/${fn}.png`,
+		img: "none",
         approved: false
       }
+	  
+	  if (req.body.img != "none") {
+		let fn = "ayy";
+		if (req.body.img.startsWith(`data:image/png`)){
+			fn = `img/${req.body.author}${Date.time()}.png`;
+			var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
+			act.img = `http://18.220.203.155:8080/${fn}`;
+
+			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
+			  console.log(err);
+			});
+		} else {
+			fn = `img/${req.body.author}${Date.time()}.jpg`;
+
+			var base64Data = req.body.img.replace(/^data:image\/jpeg;base64,/, "");
+			act.img = `http://18.220.203.155:8080/${fn}`;
+
+			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
+			  console.log(err);
+			});	
+		}
+	   }
 
       currentClass.approval_pool.push(act);
       classes.set(currentClass.id, currentClass);
