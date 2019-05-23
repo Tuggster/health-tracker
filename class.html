@@ -430,8 +430,8 @@
               goalBox.innerHTML += `\<p\>${g.goal_name}: Completed!\<p\>`
             } else {
               goalBox.innerHTML += `
-                \<h3 style=\"float:left; margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}\</h3\>
-                \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 25%; margin: 22px; margin-bottom: 0px\"\>Donkey Ride, (${g.goal_progress} pts / ${g.goal_points} pts)\</progress\> \<br\>\<br\>\<br\>
+                \<h3 style=\"float:left; margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}, (${g.goal_progress} pts / ${g.goal_points} pts)\</h3\>
+                \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 25%; margin: 22px; margin-bottom: 0px\"\>\</progress\> \<br\>\<br\>\<br\>
               `
               //`\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
             }
