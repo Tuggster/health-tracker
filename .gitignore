@@ -88,3 +88,5 @@ data/
 
 # DynamoDB Local files
 .dynamodb/
+*.png
+*.jpg
