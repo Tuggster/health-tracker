@@ -161,21 +161,46 @@
             row.insertCell(0).innerHTML = `${act.activity.title}`;
             row.insertCell(1).innerHTML = `${act.activity.details}`;
             row.insertCell(2).innerHTML = `${act.activity.value}`;
-            row.insertCell(3).innerHTML = `${act.story}`;
-            row.insertCell(4).innerHTML = `<button>Retract Request</button><br><button>Edit Request</button>`;
+
+            if (finAct.activity.img) {
+              if (finAct.activity.img != "none") {
+                row.insertCell(3).innerHTML = finAct.activity.story + `<br> <img src="${finAct.activity.img}" style="max-width:300px;">`;
+              } else {
+                row.insertCell(3).innerHTML = finAct.activity.story;
+              }
+            } else {
+              row.insertCell(3).innerHTML = finAct.activity.story;
+            }
+            row.insertCell(4).innerHTML = `<button onClick="sendRetactionRequest(${i})">Retract Request</button><br><button onClick="editExistingRequest(${i})">Edit Request</button>`;
           }
         }
       }
 
       function sendRetactionRequest(id) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}`);
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
 
         xhr.onload = function() {
-          if (xhr.responseText == `200`) {
+          if (xhr.responseText == `OK`) {
             alert("Request retracted!");
           } else {
             alert("Attempt failed, sorry bucko...");
           }
+          location.reload();
+        }
+
+        xhr.send();
+      }
+
+      function editExistingRequest(id) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
+
+        xhr.onload = function() {
+          if (xhr.responseText == `OK`) {
+            alert("Request modified!!");
+          } else {
+            alert("Attempt failed, sorry bucko...");
+          }
+          location.reload();
         }
 
         xhr.send();
