@@ -249,7 +249,7 @@ app.post('/class', function (req, res) {
 		img: "none",
         approved: false
       }
-	  
+
 	  if (req.body.img != "none") {
 		let fn = "ayy";
 		if (req.body.img.startsWith(`data:image/png`)){
@@ -268,7 +268,7 @@ app.post('/class', function (req, res) {
 
 			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
 			  console.log(err);
-			});	
+			});
 		}
 	   }
 
@@ -298,13 +298,13 @@ app.post('/class', function (req, res) {
     if (approved == "true") {
       act.approved = true;
       user.score += Number(currentClass.approval_pool[id].activity.value);
-	  if(currentClass.settings[0]) {
-		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
-		  let g = currentClass.settings[0].goals[i];
+  	  if(currentClass.settings[0]) {
+    		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
+    		  let g = currentClass.settings[0].goals[i];
 
-		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
-		}
-	  }
+    		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
+    		}
+  	  }
     } else {
       act.approved = false;
     }
@@ -354,6 +354,20 @@ app.post('/class', function (req, res) {
 
   if (req.query.do == "setNickname") {
     let
+  }
+
+  if (req.query.do == "retractRequest") {
+    let cl = classes.get(req.query.classID);
+    let index = req.query.index;
+
+    if (cl) {
+      cl.approval_pool.splice(index, 1);
+
+      classes.set(cl.id, cl);
+      res.send(200);
+    } else {
+      res.send(400);
+    }
   }
 })
 

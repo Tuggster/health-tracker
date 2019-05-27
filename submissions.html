@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Review Your Submissions</title>
+
+    <script type="text/javascript">
+
+      var weekday = new Array(7);
+      weekday[0] =  "Sunday";
+      weekday[1] = "Monday";
+      weekday[2] = "Tuesday";
+      weekday[3] = "Wednesday";
+      weekday[4] = "Thursday";
+      weekday[5] = "Friday";
+      weekday[6] = "Saturday";
+
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          xhr = new XDomainRequest();
+          xhr.open(method, url);
+        } else {
+          xhr = null;
+        }
+        return xhr;
+      }
+
+  	  function toDataURL(url, callback) {
+  		  var xhr = new XMLHttpRequest();
+  		  xhr.onload = function() {
+  			var reader = new FileReader();
+  			reader.onloadend = function() {
+  			  callback(reader.result);
+  			}
+  			reader.readAsDataURL(xhr.response);
+  		  };
+  		  xhr.open('GET', url);
+  		  xhr.responseType = 'blob';
+  		  xhr.send();
+  	  }
+
+      function encodeImageFileAsURL(element, callback) {
+        var file = element.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          console.log('RESULT', reader.result);
+          callback(reader.result);
+        }
+        reader.readAsDataURL(file);
+      }
+
+    </script>
+
+    <style media="screen">
+      th, td, table {
+        border: 1px solid #ddd;
+        border-spacing: 0px;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      th, td {
+        padding: 15px;
+        text-align: left;
+      }
+
+      .goal-title {
+        display: inline-block;
+        margin-right: 15px;
+      }
+
+      a {
+         color:inherit;
+      }
+
+      .goal-value {
+        display: inline-block;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <script type="text/javascript">
+      let name = document.getElementById('name');
+      let id = document.getElementById('idf');
+      let currentClass;
+      let currentUser;
+
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+          let response = JSON.parse(responseText);
+
+          if (response.id != getParameterByName("id")) {
+            return console.log("id mismatch!");
+          } else {
+            currentClass = response;
+          }
+
+          for (let i = 0; i < currentClass.members.length; i++) {
+            let member = currentClass.members[i];
+
+            if (member.profile.username == localStorage.getItem("username")) {
+              currentUser = member;
+            }
+          }
+
+          setTable();
+
+        }
+        xhr.send();
+
+
+    </script>
+
+    <h1>Your Pending Activity Submissions</h1>
+    <table id="act-table">
+      <tr>
+        <th>Activity Title</th>
+        <th>Activity Details</th>
+        <th>Activity Value</th>
+        <th>Your Story</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+
+    <script type="text/javascript">
+      let myActs = Array();
+      let table = document.getElementById('act-table');
+
+
+      function setTable() {
+        for (let i = 0; i < currentClass.approval_pool.length; i++) {
+          let act = currentClass.approval_pool[i];
+          if (act.author == currentUser.profile.username) {
+            let finAct = {
+              activity: act,
+              index: i
+            }
+            myActs.push(finAct);
+
+            let row = table.insertRow(1);
+            row.insertCell(0).innerHTML = `${act.activity.title}`;
+            row.insertCell(1).innerHTML = `${act.activity.details}`;
+            row.insertCell(2).innerHTML = `${act.activity.value}`;
+            row.insertCell(3).innerHTML = `${act.story}`;
+            row.insertCell(4).innerHTML = `<button>Retract Request</button><br><button>Edit Request</button>`;
+          }
+        }
+      }
+
+      function sendRetactionRequest(id) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}`);
+
+        xhr.onload = function() {
+          if (xhr.responseText == `200`) {
+            alert("Request retracted!");
+          } else {
+            alert("Attempt failed, sorry bucko...");
+          }
+        }
+
+        xhr.send();
+      }
+
+    </script>
+
+
+
+  </body>
+</html>
