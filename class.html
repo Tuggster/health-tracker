@@ -118,7 +118,9 @@
     <br><br>
     <div class="acts" style="color:white; margin-left:27px">
       <h2 style="margin-bottom: 0px">Activities</h2>
-      <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p>
+      <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p><br>
+      <a href="/" id="submissions-link"><button type="button" name="button">View/modify your pending requests</button></a>  <br>
+
       <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a></div><br>
       <table id="activity-table" style="display:inline-block">
         <tr>
@@ -142,6 +144,7 @@
         let userbox = document.getElementById('user-box');
         let userCount = document.getElementById('user-count');
         let activitytable = document.getElementById('activity-table');
+        let subButton = document.getElementById('submissions-link')
 
         userCount.innerHTML = `Users: (${currentClass.members.length})`;
 
@@ -167,8 +170,10 @@
 
           if (!url.startsWith(`18.220`)) {
             temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
+            subButton.href = `../health-tracker/submissions.html?id=${currentClass.id}`;
           } else {
             temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
+            subButton.href = `../member.html?id=${currentClass.id}`;
           }
 
           if (member.teacher) {

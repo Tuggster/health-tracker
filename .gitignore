@@ -89,5 +89,10 @@ data/
 
 # DynamoDB Local files
 .dynamodb/
+<<<<<<< HEAD
+*.png
+*.jpg
+=======
 data/enmap.sqlite
 *.sqlite
+>>>>>>> bba33b284e376d903fa6175cba180c1ebfa97e92

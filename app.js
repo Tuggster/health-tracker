@@ -357,16 +357,36 @@ app.post('/class', function (req, res) {
   }
 
   if (req.query.do == "retractRequest") {
-    let cl = classes.get(req.query.classID);
+    let cl = classes.get(req.query.classId);
     let index = req.query.index;
 
-    if (cl) {
+	console.log(cl);
+    if (cl != "undefined") {
       cl.approval_pool.splice(index, 1);
 
       classes.set(cl.id, cl);
-      res.send(200);
+      res.sendStatus(200);
     } else {
-      res.send(400);
+      res.sendStatus(400);
+    }
+  }
+  
+   if (req.query.do == "editStory") {
+    let cl = classes.get(req.query.classId);
+    let index = req.query.index;
+    let story = req.query.story;
+
+	console.log(cl);
+    if (cl != "undefined") {
+	  let newAct = cl.approval_pool[index];
+	  newAct.story = story;
+		
+      cl.approval_pool[index] = newAct;
+
+      classes.set(cl.id, cl);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
     }
   }
 })
