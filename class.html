@@ -134,7 +134,7 @@
         <em><p id="activity-name-box">name</p></em>
         <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
         <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
-        <button type="submit" name="button" onclick="submitActivity()">Submit</button>
+        <button type="submit" name="button" onclick="submitActivity()" id="submit-button">Submit</button>
       </div>
     </div>
 
@@ -253,7 +253,7 @@
       let adminPanel = document.getElementById('admin-buttons');
 
       let approveButton = document.getElementById('approve-button');
-
+      let submitButton = document.getElementById('submit-button');
 
 
       let selectedActivity;
@@ -295,6 +295,8 @@
             if (result) {
               imgEncoded = result.split(`,`)[1];
               console.log(imgEncoded);
+              submitButton.innerHTML = `Uploading, please wait.`;
+              submitButton.disabled = true;
               submitWithImage(result);
             }
           });
@@ -359,6 +361,9 @@
           if (responseText == "Created") {
             alert("Success!");
             submitPanel.style.display = "none";
+            submitButton.innerHTML = `Submit`;
+
+            submitButton.disabled = false;
           } else {
             alert("Failed to submit activity!");
           }
