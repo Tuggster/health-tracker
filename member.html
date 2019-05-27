@@ -120,7 +120,15 @@
         row.insertCell(0).innerHTML = request.activity.title;
         row.insertCell(1).innerHTML = request.activity.details;
         row.insertCell(2).innerHTML = `${request.activity.value} pts`;
-        row.insertCell(3).innerHTML = request.story;
+        if (request.img) {
+          if (request.img != "none") {
+            row.insertCell(3).innerHTML = request.story + `<br> <img src="${request.img}" style="max-width:350px;">`;
+          } else {
+            row.insertCell(3).innerHTML = request.story;
+          }
+        } else {
+          row.insertCell(3).innerHTML = request.story;
+        }
         row.insertCell(4).innerHTML = request.date;
         if (request.approved == true) {
           row.insertCell(5).innerHTML = `\<p style="color:green"\>Yes!\<p\>`;

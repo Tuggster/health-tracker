@@ -110,7 +110,15 @@
           row.insertCell(0).innerHTML = request.author;
           row.insertCell(1).innerHTML = request.activity.title;
           row.insertCell(2).innerHTML = request.activity.details;
-          row.insertCell(3).innerHTML = request.story;
+          if (request.img) {
+            if (request.img != "none") {
+              row.insertCell(3).innerHTML = request.story + `<br> <img src="${request.img}" style="max-width:300px;">`;
+            } else {
+              row.insertCell(3).innerHTML = request.story;
+            }
+          } else {
+            row.insertCell(3).innerHTML = request.story;
+          }
           row.insertCell(4).innerHTML = request.date;
           row.insertCell(5).innerHTML = `\<button onclick="modifyRequest(${i}, true)"\>Approve\</button\> <button onclick="modifyRequest(${i}, false)"\>Deny\</button\>`;
 

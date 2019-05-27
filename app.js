@@ -4,9 +4,11 @@ const app = express();
 const Enmap = require("enmap");
 const enmap = new Enmap({name: "scores"});
 const classes = new Enmap({name: "classes"});
+var fs = require("fs");
+
 
 var bodyParser = require('body-parser')
-app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.json({limit: '50mb'}));       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
@@ -16,6 +18,9 @@ var cors = require('cors');
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(cors());
 app.use(express.static('../health-tracker'))
+
+Date.prototype.toUnixTime = function() { return this.getTime()/1000|0 };
+Date.time = function() { return new Date().toUnixTime(); }
 
 const userProfile = {
   nameFirst: "John",
@@ -241,8 +246,31 @@ app.post('/class', function (req, res) {
         story: req.body.story,
         date: req.body.date,
         activity: req.body.activity,
+		img: "none",
         approved: false
       }
+
+	  if (req.body.img != "none") {
+		let fn = "ayy";
+		if (req.body.img.startsWith(`data:image/png`)){
+			fn = `img/${req.body.author}${Date.time()}.png`;
+			var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
+			act.img = `http://18.220.203.155:8080/${fn}`;
+
+			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
+			  console.log(err);
+			});
+		} else {
+			fn = `img/${req.body.author}${Date.time()}.jpg`;
+
+			var base64Data = req.body.img.replace(/^data:image\/jpeg;base64,/, "");
+			act.img = `http://18.220.203.155:8080/${fn}`;
+
+			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
+			  console.log(err);
+			});
+		}
+	   }
 
       currentClass.approval_pool.push(act);
       classes.set(currentClass.id, currentClass);
@@ -270,13 +298,13 @@ app.post('/class', function (req, res) {
     if (approved == "true") {
       act.approved = true;
       user.score += Number(currentClass.approval_pool[id].activity.value);
-	  if(currentClass.settings[0]) {
-		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
-		  let g = currentClass.settings[0].goals[i];
+  	  if(currentClass.settings[0]) {
+    		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
+    		  let g = currentClass.settings[0].goals[i];
 
-		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
-		}
-	  }
+    		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
+    		}
+  	  }
     } else {
       act.approved = false;
     }
@@ -325,7 +353,21 @@ app.post('/class', function (req, res) {
   }
 
   if (req.query.do == "setNickname") {
-    let 
+    let
+  }
+
+  if (req.query.do == "retractRequest") {
+    let cl = classes.get(req.query.classID);
+    let index = req.query.index;
+
+    if (cl) {
+      cl.approval_pool.splice(index, 1);
+
+      classes.set(cl.id, cl);
+      res.send(200);
+    } else {
+      res.send(400);
+    }
   }
 })
 
@@ -363,6 +405,8 @@ app.get('/class', function(req, res) {
     }
   }
 });
+
+
 
 function createClass(className, creator) {
   let rand = getRandomInt(9999999999);

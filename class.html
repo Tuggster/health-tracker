@@ -6,6 +6,15 @@
 
     <script type="text/javascript">
 
+      var weekday = new Array(7);
+      weekday[0] =  "Sunday";
+      weekday[1] = "Monday";
+      weekday[2] = "Tuesday";
+      weekday[3] = "Wednesday";
+      weekday[4] = "Thursday";
+      weekday[5] = "Friday";
+      weekday[6] = "Saturday";
+
       function getParameterByName(name, url) {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, '\\$&');
@@ -27,6 +36,30 @@
           xhr = null;
         }
         return xhr;
+      }
+
+	     function toDataURL(url, callback) {
+		  var xhr = new XMLHttpRequest();
+		  xhr.onload = function() {
+			var reader = new FileReader();
+			reader.onloadend = function() {
+			  callback(reader.result);
+			}
+			reader.readAsDataURL(xhr.response);
+		  };
+		  xhr.open('GET', url);
+		  xhr.responseType = 'blob';
+		  xhr.send();
+	  }
+
+      function encodeImageFileAsURL(element, callback) {
+        var file = element.files[0];
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          console.log('RESULT', reader.result);
+          callback(reader.result);
+        }
+        reader.readAsDataURL(file);
       }
 
     </script>
@@ -53,170 +86,64 @@
         margin-right: 15px;
       }
 
+      a {
+         color:inherit;
+      }
+
       .goal-value {
         display: inline-block;
       }
     </style>
   </head>
-  <body>
-    <div class="" name="title-bar">
-      <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px">Horse Lounge</h1>
-      <h2 id="idf" style="padding-top: 5px; margin: 0px">ID: awdawdawdawd</h2>
+  <body style="background-color: #0C0C0C">
+    <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
+      <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px; font-size: 35pt">Horse Lounge</h1>
+      <h2 id="idf" style="padding-top: 5px; margin: 0px; float:left">ID: awdawdawdawd</h2>
+      <h2 id="hidebtn" style="margin-left: 15px; margin-top: 4px; float:left; color:white"> <button type="button" name="button" style="border:none; background-color:transparent; color: white;" onclick="toggleGoals()">Click to show/hide goals</button></h2>
+    </div><br><br>
 
-      <script type="text/javascript">
-      let name = document.getElementById('name');
-      let id = document.getElementById('idf');
-      let currentClass;
-      let currentUser;
-
-      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
-
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
-          let response = JSON.parse(responseText);
-
-          if (response.id != getParameterByName("id")) {
-            return console.log("id mismatch!");
-          } else {
-            currentClass = response;
-            name.innerHTML = currentClass.name;
-            id.innerHTML = `ID: ${currentClass.id}`;
-          }
-
-          for (let i = 0; i < currentClass.members.length; i++) {
-            let member = currentClass.members[i];
-
-            if (member.profile.username == localStorage.getItem("username")) {
-              currentUser = member;
-            }
-          }
-
-          setTable();
-          loadGoals();
-
-        }
-        xhr.send();
-
-
-      </script>
-    </div>
-
-    <div class="goal-tracker" style="margin-bottom:25px">
-
-      <script type="text/javascript" name="goal-manager">
-
-        let href = location.href;
-        let url = href.replace(/(^\w+:|^)\/\//, '');
-
-        let addButton;
-        let goalTable;
-
-        function loadGoals() {
-          let goals = currentClass.settings[0].goals;
-
-          goalTable = document.getElementById('goal-table');
-          addButton = document.getElementById('add-goal');
-
-          if (currentUser.teacher) {
-            addButton.style = "inline-block;"
-          } else {
-            addButton.style = "none";
-          }
-
-          if (!goals) {
-            return noGoals();
-          }
-
-          if (goals.length > 0) {
-            for (let i = 0; i < goals.length; i++) {
-              let g = goals[i];
-
-              let row = goalTable.insertRow();
-              if (g.goal_progress >= g.goal_points) {
-                row.innerHTML = `\<p\>${g.goal_name}: Completed!\<p\>`
-              } else {
-                row.innerHTML = `\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
-              }
-            }
-          } else {
-            noGoals();
-          }
-        }
-
-        function noGoals() {
-          goalTable.insertRow().innerHTML = "No class goals.";
-        }
-
-        function addGoal() {
-          let goalTitle = prompt("Enter your goal's title.");
-          if (goalTitle == undefined || !goalTitle) {
-            return alert("Failed");
-          }
-
-          let goalTarget = prompt("Enter your goal's required point gain.");
-          if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
-            return alert("Failed");
-          }
-
-          let newGoal = {
-            name: goalTitle,
-            points: goalTarget
-          }
-
-          let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addGoal&classID=${currentClass.id}`);
-          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-          xhr.onload = function () {
-            let response = xhr.responseText;
-
-            if (response.toLowerCase() == "not found") {
-              alert(`Failed to create goal!`);
-            } else {
-              alert(`Goal created succesfully!`);
-            }
-          }
-
-          xhr.send(JSON.stringify(newGoal));
-        }
-      </script>
-
-      <br>
+    <div class="goal-tracker" style="color: white; margin-left: 27px">
       <h2 style="margin-bottom: 0px">Goals</h2> <button type="button" id="add-goal" onclick="addGoal()" style="display: none;">Add Goal</button>
-      <table id="goal-table" style="width: 50%">
-        <!-- <tr> Example goal display
-          <p class="goal-title">Those pizzas   (750pts / 1500 pts)</p> <progress value="50" max="100" style="width: 25%" class="goal-value"></progress>
-          <br>
-        </tr> -->
-      </table>
+
+      <div style="margin-left:5px" id="goal-box">
+
+      </div>
+
+    </div> <br>
+
+    <h2 style="color:white; margin-left:27px" id="user-count">Users (4):</h2>
+    <div class="" style="margin-left:27px; color: white; font-size: 15pt" id="user-box">
     </div>
 
-    <table id="user-table">
-      <tr>
-        <th>Username</th>
-        <th>Score</th>
-      </tr>
-    </table>
-    <h2 style="margin-bottom: 0px">Activities</h2>
-    <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p>
-    <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a></div><br>
-    <table id="activity-table" style="display:inline-block">
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Value</th>
-        <th>Actions</th>
-      </tr>
-    </table>
-    <div class="submit-activity" style="display:none" id="submit-panel">
-      <em><p id="activity-name-box">name</p></em>
-      <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
-      <button type="submit" name="button" onclick="submitActivity()">Submit</button>
+    <br><br>
+    <div class="acts" style="color:white; margin-left:27px">
+      <h2 style="margin-bottom: 0px">Activities</h2>
+      <p style="margin-bottom: 0px">Complete these activities and submit your stories to earn points!</p>
+      <br><div id="admin-buttons"><button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button><a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a></div><br>
+      <table id="activity-table" style="display:inline-block">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Value</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+      <div class="submit-activity" style="display:none" id="submit-panel">
+        <em><p id="activity-name-box">name</p></em>
+        <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
+        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
+        <button type="submit" name="button" onclick="submitActivity()">Submit</button>
+      </div>
     </div>
+
 
     <script type="text/javascript" name="table-manager">
       function setTable() {
-        let usertable = document.getElementById('user-table');
+        let userbox = document.getElementById('user-box');
+        let userCount = document.getElementById('user-count');
         let activitytable = document.getElementById('activity-table');
+
+        userCount.innerHTML = `Users: (${currentClass.members.length})`;
 
         // for (let i = 0; i < currentClass.teachers.length; i++) {
         //   let row = usertable.insertRow();
@@ -225,34 +152,46 @@
         //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
         // }
 
+        let highestScore = 0;
         for (let i = 0; i < currentClass.members.length; i++) {
-          let row = usertable.insertRow();
           let member = currentClass.members[i];
-          if (member.teacher) {
-            row.insertCell(0).innerHTML = `<p style="color:red;">★ ${member.nickname}</p>`;
-          } else {
-            row.insertCell(0).innerHTML = member.nickname;
-          }
 
-          row.insertCell(1).innerHTML = `${member.score} pts`;
+          if (member.score > highestScore) {
+            highestScore = member.score;
+          }
+        }
+
+        for (let i = 0; i < currentClass.members.length; i++) {
+          let member = currentClass.members[i];
+          let temp = ``;
 
           if (!url.startsWith(`18.220`)) {
-            row.insertCell(2).innerHTML = `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+            temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
           } else {
-            row.insertCell(2).innerHTML = `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}"\>View history\</a\>`;
+            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
           }
+
+          if (member.teacher) {
+            temp += `<p style="color:red">★ ${member.nickname}: ${member.score} pts</p>\</a\>`;
+          } else {
+            if (member.score == highestScore) {
+              temp += `<p style="color:gold">🎖 ${member.nickname}: ${member.score} pts 🎖<p>\</a\>`;
+            } else {
+              temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
+            }
+          }
+          userbox.innerHTML+= temp;
         }
 
         if (!currentUser.teacher) {
           adminPanel.style.display = "none";
         } else {
-          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`
-          approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`
-        }
-
-        if (url.startsWith(`18.220`)) {
-          approveButton.style.display = "none";
-          adminPanel.innerHTML += ` Approving requests is not currently supported on mobile.`
+          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
+          if (url.startsWith(`18.220`)) {
+            approveButton.href = `../approve.html?id=${currentClass.id}`
+          } else {
+            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
+          }
         }
 
         console.log(currentClass.activities)
@@ -317,6 +256,8 @@
       function prepareActivity(act) {
         submitPanel.style.display = "inline-block";
         selectedActivity = currentClass.activities[act];
+        titleBox.innerHTML = `${selectedActivity.title}`;
+        window.scrollTo(0,document.body.scrollHeight);
         console.log(selectedActivity);
       }
 
@@ -337,6 +278,26 @@
 
       function submitActivity() {
         let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
+        let img = document.getElementById(`image-upload`);
+        let imgEncoded;
+
+        if (img.files[0]) {
+          if (img.files[0].size > 50000000) {
+            alert("Max image size 50mb. Sorry! :(");
+            return;
+          }
+          encodeImageFileAsURL(img, function(result) {
+            if (result) {
+              imgEncoded = result.split(`,`)[1];
+              console.log(imgEncoded);
+              submitWithImage(result);
+            }
+          });
+          return;
+        }
+
+
+
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {
@@ -360,11 +321,18 @@
           }
         */
 
+        let date = new Date();
+
+        var n = weekday[date.getDay()];
+
+        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+        console.log(dateFormatted);
         let act = {
           author: currentUser.profile.username,
           story: storyBox.value,
-          date: new Date(),
+          date: dateFormatted,
           activity: selectedActivity,
+          img: "none",
           approved: false
         }
 
@@ -374,6 +342,185 @@
 
         xhr.send(JSON.stringify(act));
       }
+
+      function submitWithImage(result) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
+
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+
+          if (responseText == "Created") {
+            alert("Success!");
+            submitPanel.style.display = "none";
+          } else {
+            alert("Failed to submit activity!");
+          }
+
+        }
+
+        /*
+          const activitySubmissionTemplate = {
+            author: "Tuggi",
+            story: "I did a walking",
+            date: new Date(),
+            approved: false
+          }
+        */
+
+        let date = new Date();
+
+        var n = weekday[date.getDay()];
+
+        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+        console.log(dateFormatted);
+        let act = {
+          author: currentUser.profile.username,
+          story: storyBox.value,
+          date: dateFormatted,
+          activity: selectedActivity,
+          img: "none",
+          approved: false
+        }
+
+        act.img = result;
+
+        let temp = {
+          water: "hole"
+        }
+
+        xhr.send(JSON.stringify(act));
+      }
+    </script>
+
+    <script type="text/javascript" name="goal-manager">
+
+      let href = location.href;
+      let url = href.replace(/(^\w+:|^)\/\//, '');
+
+      let addButton;
+      let goalBox;
+
+
+
+      function loadGoals() {
+        let goals = currentClass.settings[0].goals;
+
+        goalBox = document.getElementById('goal-box');
+        addButton = document.getElementById('add-goal');
+
+        if (currentUser.teacher) {
+          addButton.style.display = "inline-block"
+          console.log("Teacher, displaying button");
+        } else {
+          console.log("Student, hiding button");
+          addButton.style.display = "none";
+        }
+
+        if (!goals) {
+          return noGoals();
+        }
+
+        if (goals.length > 0) {
+          for (let i = 0; i < goals.length; i++) {
+            let g = goals[i];
+
+            if (g.goal_progress >= g.goal_points) {
+              goalBox.innerHTML += `\<p\>${g.goal_name}: Completed!\<p\>`
+            } else {
+              goalBox.innerHTML += `
+                \<h3 style=\"float:left; margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}, (${g.goal_progress} pts / ${g.goal_points} pts)\</h3\>
+                \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 25%; margin: 22px; margin-bottom: 0px\"\>\</progress\> \<br\>\<br\>\<br\>
+              `
+              //`\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
+            }
+          }
+        } else {
+          noGoals();
+        }
+      }
+
+      function noGoals() {
+        goalBox.innerHTML = "No class goals. Encourage your teacher to add one!";
+      }
+
+      function toggleGoals() {
+        if (goalBox.parentElement.style.display == "block") {
+          goalBox.parentElement.style.display = `none`;
+        } else {
+          goalBox.parentElement.style.display = `block`;
+        }
+      }
+
+      function addGoal() {
+        let goalTitle = prompt("Enter your goal's title.");
+        if (goalTitle == undefined || !goalTitle) {
+          return alert("Failed");
+        }
+
+        let goalTarget = prompt("Enter your goal's required point gain.");
+        if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
+          return alert("Failed");
+        }
+
+        let newGoal = {
+          name: goalTitle,
+          points: goalTarget
+        }
+
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addGoal&classID=${currentClass.id}`);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function () {
+          let response = xhr.responseText;
+
+          if (response.toLowerCase() == "not found") {
+            alert(`Failed to create goal!`);
+          } else {
+            alert(`Goal created succesfully!`);
+          }
+        }
+
+        xhr.send(JSON.stringify(newGoal));
+      }
+    </script>
+
+    <script type="text/javascript">
+      let name = document.getElementById('name');
+      let id = document.getElementById('idf');
+      let currentClass;
+      let currentUser;
+
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+          let response = JSON.parse(responseText);
+
+          if (response.id != getParameterByName("id")) {
+            return console.log("id mismatch!");
+          } else {
+            currentClass = response;
+            name.innerHTML = currentClass.name;
+            id.innerHTML = `ID: ${currentClass.id}`;
+          }
+
+          for (let i = 0; i < currentClass.members.length; i++) {
+            let member = currentClass.members[i];
+
+            if (member.profile.username == localStorage.getItem("username")) {
+              currentUser = member;
+            }
+          }
+
+          setTable();
+          loadGoals();
+
+        }
+        xhr.send();
+
+
     </script>
   </body>
 </html>
