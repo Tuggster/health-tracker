@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300&display=swap" rel="stylesheet">
     <meta charset="utf-8">
     <title>Class view</title>
 
     <script type="text/javascript">
+
+      let href = location.href;
+      let url = href.replace(/(^\w+:|^)\/\//, '');
 
       var weekday = new Array(7);
       weekday[0] =  "Sunday";
@@ -23,6 +27,17 @@
         if (!results) return null;
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      function updateQueryStringParameter(uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+          return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        else {
+          return uri + separator + key + "=" + value;
+        }
       }
 
       function createCORSRequest(method, url) {
@@ -93,10 +108,37 @@
       .goal-value {
         display: inline-block;
       }
+
+      h1, h2 {
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+        margin-top: 0px;
+        margin-bottom: 3px;
+      }
+      .inline {
+        display: inline-block;
+        text-align: center;
+        padding: 5px;
+      }
+      .center {
+        text-align: center;
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+      }
+
+      .approve-fade-in {
+        -webkit-transition: 0.5s;
+        -moz-transition: 0.5s;
+        -ms-transition: 0.5s;
+        -o-transition: 0.5s;
+        transition: 0.5s;
+        color: red;
+      }
     </style>
   </head>
   <body style="background-color: #0C0C0C">
-    <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
+    <!-- <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
       <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px; font-size: 35pt">Horse Lounge</h1>
       <h2 id="idf" style="padding-top: 5px; margin: 0px; float:left">ID: awdawdawdawd</h2>
       <h2 id="hidebtn" style="margin-left: 15px; margin-top: 4px; float:left; color:white"> <button type="button" name="button" style="border:none; background-color:transparent; color: white;" onclick="toggleGoals()">Click to show/hide goals</button></h2>
@@ -136,113 +178,168 @@
         <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
         <button type="submit" name="button" onclick="submitActivity()" id="submit-button">Submit</button>
       </div>
+    </div> -->
+
+    <header style="color: white; background: #3B3B3B">
+      <h1 id="name">Class name</h1>
+      <h2 id="idf">Class ID</h1>
+      <div class="center">
+        <h2 class="inline" id="header-link1" onclick="setMode(1)">Activities</h2>
+        <h2 class="inline" id="header-link2" onclick="setMode(2)">Leaderboards</h2>
+        <h2 class="inline" id="header-link3" onclick="setMode(3)">Approvals</h2>
+      </div>
+
+
+    </header>
+    <br><br>
+    <div class="acts" id="acts-div" style="color: white">
+
+      <div class="center" style="display:none;" id="submit-panel">
+        <em><p id="activity-name-box">name</p></em>
+        <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
+        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
+        <button type="submit" name="button" onclick="submitActivity()" id="submit-button">Submit</button>
+      </div>
+
+      <div class="center" id="admin-buttons">
+        <button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button>
+        <a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a>
+      </div>
+      <table class="center" id="activity-table">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Value</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+    </div>
+    <br><br>
+    <div class="goals" id="goal-div" style="color: white;">
+      <h2 style="margin-bottom: 0px"  class="inline">Goals</h2>
+      <button type="button" id="add-goal" onclick="addGoal()" style="display: none;" class="inline">Add Goal</button>
+      <div style="margin-left:5px" id="goal-box" class="" style=""> </div>
+
     </div>
 
+    <div class="center" id="approve-div" style="color: white;">
+      <h1 id="appName">Activity completion requests for "default"</h1>
+      <h2 id="idf"></h2>
+      <table id="table">
+        <tr>
+          <th>Username</th>
+          <th>Activity name</th>
+          <th>Activity description</th>
+          <th>User story</th>
+          <th>Date of submission</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+    </div>
+    <div class="users" class="user-div" id="user-div" style="color:white" style="text-align:center">
+      <h1 id="user-count">User count: </h1>
+      <p id="user-box" style="text-align:center; font-size: 25px"></p>
+    </div>
 
-    <script type="text/javascript" name="table-manager">
-      function setTable() {
-        let userbox = document.getElementById('user-box');
-        let userCount = document.getElementById('user-count');
-        let activitytable = document.getElementById('activity-table');
-        let subButton = document.getElementById('submissions-link')
+    <script type="text/javascript" name="page-controller">
+      let l1 = document.getElementById('header-link1');
+      let l2 = document.getElementById('header-link2');
+      let l3 = document.getElementById('header-link3');
+      let mode; // 1 - acts, 2 - members, 3 approvals
+      let actDiv = document.getElementById('acts-div');
+      let goalDiv = document.getElementById('goal-div');
+      let userDiv = document.getElementById('user-div');
+      let appDiv = document.getElementById('approve-div');
 
-        userCount.innerHTML = `Users: (${currentClass.members.length})`;
+      let goalsInit = false;
+      let approveInit = false;
 
-        // for (let i = 0; i < currentClass.teachers.length; i++) {
-        //   let row = usertable.insertRow();
-        //
-        //   row.insertCell(0).innerHTML = `<p style="color:red;">★ ${currentClass.teachers[i].nickname}</p>`;
-        //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
-        // }
+      setMode(1);
 
-        let highestScore = 0;
-        for (let i = 0; i < currentClass.members.length; i++) {
-          let member = currentClass.members[i];
+      function setMode(newMode) {
 
-          if (member.score > highestScore) {
-            highestScore = member.score;
-          }
+        if (newMode == 3 && !currentUser.teacher) {
+          l3.classList.add("approve-fade-in")
+          l3.style.color = "red";
+          setTimeout(function() {
+            l3.style.color = "white";
+          }, 500);
+
+          return;
         }
+        window.history.pushState('page2', 'Title', updateQueryStringParameter(url, "mode", newMode.toString()));
 
-        for (let i = 0; i < currentClass.members.length; i++) {
-          let member = currentClass.members[i];
-          let temp = ``;
+        mode = newMode;
+        l1.style.color = `white`;
+        l2.style.color = `white`;
+        l3.style.color = `white`;
 
-          if (!url.startsWith(`18.220`)) {
-            temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
-            subButton.href = `../health-tracker/submissions.html?id=${currentClass.id}`;
-          } else {
-            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
-            subButton.href = `../submissions.html?id=${currentClass.id}`;
+        actDiv.style.display = "none";
+        goalDiv.style.display = "none";
+        userDiv.style.display = "none";
+        appDiv.style.display = "none";
+
+
+
+        if (newMode == 1) { // yeah i know i could have used switch here leave me alone
+          l1.style.color = `#64A2FF`;
+          actDiv.style.display = "block";
+        } else if (newMode == 2) {
+          if (!goalsInit) {
+            loadGoals();
+            goalsInit = true;
           }
+          l2.style.color = `#64A2FF`;
+          goalDiv.style.display = "block";
+          userDiv.style.display = "block";
+        } else if (newMode == 3) {
+          l3.style.color = `#64A2FF`;
+          appDiv.style.display = "block";
 
-          if (member.teacher) {
-            temp += `<p style="color:red">★ ${member.nickname}: ${member.score} pts</p>\</a\>`;
-          } else {
-            if (member.score == highestScore) {
-              temp += `<p style="color:gold">🎖 ${member.nickname}: ${member.score} pts 🎖<p>\</a\>`;
-            } else {
-              temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
-            }
+          if (!approveInit) {
+            setActs();
           }
-          userbox.innerHTML+= temp;
-        }
-
-        if (!currentUser.teacher) {
-          adminPanel.style.display = "none";
-        } else {
-          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
-          if (url.startsWith(`18.220`)) {
-            approveButton.href = `../approve.html?id=${currentClass.id}`
-          } else {
-            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
-          }
-        }
-
-        console.log(currentClass.activities)
-        for (let i = 0; i < currentClass.activities.length; i++) {
-          let event = currentClass.activities[i];
-          let row = activitytable.insertRow(1);
-
-          row.insertCell(0).innerHTML = event.title;
-          row.insertCell(1).innerHTML = event.details;
-          row.insertCell(2).innerHTML = event.value + " points";
-          let r3 = row.insertCell(3)
-            r3.innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>`;
-          if (currentUser.teacher) {
-            r3.innerHTML += `\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`
-          }
+          approveInit = true;
         }
       }
 
-      function addActivity() {
-        let title = prompt("Provide an activity title.");
-        if (title == null) return;
+    </script>
 
-        let details = prompt("Enter activity details.\n(What a user must do to earn their points.)");
-        if (details == null) return;
+    <script type="text/javascript">
+      let name = document.getElementById('name');
+      let id = document.getElementById('idf');
+      let currentClass;
+      let currentUser;
 
-        let value = prompt("Enter activity value.\n(The points a user will receive upon completion.)");
-        if (value == null) return;
-        if (isNaN(Number(value))) {
-          return alert("Aborted! Please provide a number value.");
-        }
-
-        let activity = {
-          title: title,
-          details: details,
-          value: value
-        }
-
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addActivity&classID=${currentClass.id}`);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;
-        }
+          let response = JSON.parse(responseText);
 
-        xhr.send(JSON.stringify(activity));
-      }
+          if (response.id != getParameterByName("id")) {
+            return console.log("id mismatch!");
+          } else {
+            currentClass = response;
+            name.innerHTML = currentClass.name;
+            id.innerHTML = `ID: ${currentClass.id}`;
+          }
+
+          for (let i = 0; i < currentClass.members.length; i++) {
+            let member = currentClass.members[i];
+
+            if (member.profile.username == localStorage.getItem("username")) {
+              currentUser = member;
+            }
+          }
+
+          fillAcTable();
+          setTable();
+
+        }
+        xhr.send();
+
+
     </script>
 
     <script type="text/javascript" id="activity-manager">
@@ -254,15 +351,19 @@
 
       let approveButton = document.getElementById('approve-button');
       let submitButton = document.getElementById('submit-button');
+      let subButton = document.getElementById('submissions-link')
+      let activitytable = document.getElementById('activity-table');
+
 
 
       let selectedActivity;
 
       function prepareActivity(act) {
-        submitPanel.style.display = "inline-block";
+        submitPanel.style.display = "block";
         selectedActivity = currentClass.activities[act];
         titleBox.innerHTML = `${selectedActivity.title}`;
-        window.scrollTo(0,document.body.scrollHeight);
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
         console.log(selectedActivity);
       }
 
@@ -304,7 +405,6 @@
         }
 
 
-
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {
@@ -315,6 +415,12 @@
             submitPanel.style.display = "none";
           } else {
             alert("Failed to submit activity!");
+          }
+
+          if (!url.startsWith(`18.220`)) {
+            subButton.href = `../health-tracker/submissions.html?id=${currentClass.id}`;
+          } else {
+            subButton.href = `../submissions.html?id=${currentClass.id}`;
           }
 
         }
@@ -402,13 +508,118 @@
 
         xhr.send(JSON.stringify(act));
       }
+
+      function fillAcTable() {
+        if (!currentUser.teacher) {
+          adminPanel.style.display = "none";
+        } else {
+          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
+          if (url.startsWith(`18.220`)) {
+            approveButton.href = `../approve.html?id=${currentClass.id}`
+          } else {
+            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
+          }
+        }
+
+        console.log(currentClass.activities);
+        for (let i = 0; i < currentClass.activities.length; i++) {
+          let event = currentClass.activities[i];
+          let row = activitytable.insertRow(1);
+
+          row.insertCell(0).innerHTML = event.title;
+          row.insertCell(1).innerHTML = event.details;
+          row.insertCell(2).innerHTML = event.value + " points";
+          let r3 = row.insertCell(3)
+            r3.innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>`;
+          if (currentUser.teacher) {
+            r3.innerHTML += `\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`
+          }
+        }
+      }
+    </script>
+
+    <script type="text/javascript" name="table-manager">
+      function setTable() {
+        let userbox = document.getElementById('user-box');
+        let userCount = document.getElementById('user-count');
+
+        userCount.innerHTML = `Users: (${currentClass.members.length})`;
+
+        if (Number(getParameterByName("mode", url))) {
+          setMode(Number(getParameterByName("mode", url)));
+        }
+
+        // for (let i = 0; i < currentClass.teachers.length; i++) {
+        //   let row = usertable.insertRow();
+        //
+        //   row.insertCell(0).innerHTML = `<p style="color:red;">★ ${currentClass.teachers[i].nickname}</p>`;
+        //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
+        // }
+
+        let highestScore = 0;
+        for (let i = 0; i < currentClass.members.length; i++) {
+          let member = currentClass.members[i];
+
+          if (member.score > highestScore) {
+            highestScore = member.score;
+          }
+        }
+
+        for (let i = 0; i < currentClass.members.length; i++) {
+          let member = currentClass.members[i];
+          let temp = ``;
+
+          if (!url.startsWith(`18.220`)) {
+            temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
+          } else {
+            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
+          }
+
+          if (member.teacher) {
+            temp += `<p style="color:red">★ ${member.nickname}: ${member.score} pts</p>\</a\>`;
+          } else {
+            if (member.score == highestScore) {
+              temp += `<p style="color:gold">🎖 ${member.nickname}: ${member.score} pts 🎖<p>\</a\>`;
+            } else {
+              temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
+            }
+          }
+          userbox.innerHTML+= temp;
+        }
+      }
+
+      function addActivity() {
+        let title = prompt("Provide an activity title.");
+        if (title == null) return;
+
+        let details = prompt("Enter activity details.\n(What a user must do to earn their points.)");
+        if (details == null) return;
+
+        let value = prompt("Enter activity value.\n(The points a user will receive upon completion.)");
+        if (value == null) return;
+        if (isNaN(Number(value))) {
+          return alert("Aborted! Please provide a number value.");
+        }
+
+        let activity = {
+          title: title,
+          details: details,
+          value: value
+        }
+
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addActivity&classID=${currentClass.id}`);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function() {
+          var responseText = xhr.responseText;
+          location.reload();
+        }
+
+        xhr.send(JSON.stringify(activity));
+      }
     </script>
 
     <script type="text/javascript" name="goal-manager">
-
-      let href = location.href;
-      let url = href.replace(/(^\w+:|^)\/\//, '');
-
       let addButton;
       let goalBox;
 
@@ -440,8 +651,8 @@
               goalBox.innerHTML += `\<p\>${g.goal_name}: Completed!\<p\>`
             } else {
               goalBox.innerHTML += `
-                \<h3 style=\"float:left; margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}, (${g.goal_progress} pts / ${g.goal_points} pts)\</h3\>
-                \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 25%; margin: 22px; margin-bottom: 0px\"\>\</progress\> \<br\>\<br\>\<br\>
+                \<h3 style=\" margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}, (${g.goal_progress} pts / ${g.goal_points} pts)\</h3\>
+                \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 100%; margin: 22px; margin-bottom: 0px; margin-left: 0px;\"\>\</progress\> \<br\>\<br\>\<br\>
               `
               //`\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
             }
@@ -496,41 +707,48 @@
       }
     </script>
 
-    <script type="text/javascript">
-      let name = document.getElementById('name');
-      let id = document.getElementById('idf');
-      let currentClass;
-      let currentUser;
+    <script type="text/javascript" name="act-manager">
+      function setActs() {
+        let appName = document.getElementById('appName');
+        appName.innerHTML = `Activity completion requests for "${currentClass.name}"`;
+        for (let i = 0; i < currentClass.approval_pool.length; i++) {
+          let request = currentClass.approval_pool[i];
 
-      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
-
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
-          let response = JSON.parse(responseText);
-
-          if (response.id != getParameterByName("id")) {
-            return console.log("id mismatch!");
-          } else {
-            currentClass = response;
-            name.innerHTML = currentClass.name;
-            id.innerHTML = `ID: ${currentClass.id}`;
-          }
-
-          for (let i = 0; i < currentClass.members.length; i++) {
-            let member = currentClass.members[i];
-
-            if (member.profile.username == localStorage.getItem("username")) {
-              currentUser = member;
+          let row = table.insertRow(1);
+          row.insertCell(0).innerHTML = request.author;
+          row.insertCell(1).innerHTML = request.activity.title;
+          row.insertCell(2).innerHTML = request.activity.details;
+          if (request.img) {
+            if (request.img != "none") {
+              row.insertCell(3).innerHTML = request.story + `<br> <img src="${request.img}" style="max-width:300px;">`;
+            } else {
+              row.insertCell(3).innerHTML = request.story;
             }
+          } else {
+            row.insertCell(3).innerHTML = request.story;
           }
-
-          setTable();
-          loadGoals();
+          row.insertCell(4).innerHTML = request.date;
+          row.insertCell(5).innerHTML = `\<button onclick="modifyRequest(${i}, true)"\>Approve\</button\> <button onclick="modifyRequest(${i}, false)"\>Deny\</button\>`;
 
         }
-        xhr.send();
+      }
 
+      function modifyRequest(id, approved) {
+        let request = currentClass.approval_pool[id];
+        let user = request.author;
 
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
+
+          xhr.onload = function() {
+            var responseText = xhr.responseText;
+
+            if (responseText == "Created") {
+              location.reload()
+            }
+          }
+          xhr.send();
+
+      }
     </script>
   </body>
 </html>
