@@ -363,7 +363,7 @@ app.post('/class', function (req, res) {
 	console.log(cl);
     if (cl != "undefined") {
       cl.approval_pool.splice(index, 1);
-
+		console.log(cl.approval_pool[index]);
       classes.set(cl.id, cl);
       res.sendStatus(200);
     } else {
