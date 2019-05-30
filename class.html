@@ -135,6 +135,14 @@
         transition: 0.5s;
         color: red;
       }
+
+      .fade {
+        -webkit-transition: 0.5s;
+        -moz-transition: 0.5s;
+        -ms-transition: 0.5s;
+        -o-transition: 0.5s;
+        transition: 0.5s;
+      }
     </style>
   </head>
   <body style="background-color: #0C0C0C">
@@ -184,9 +192,10 @@
       <h1 id="name">Class name</h1>
       <h2 id="idf">Class ID</h1>
       <div class="center">
-        <h2 class="inline" id="header-link1" onclick="setMode(1)">Activities</h2>
-        <h2 class="inline" id="header-link2" onclick="setMode(2)">Leaderboards</h2>
-        <h2 class="inline" id="header-link3" onclick="setMode(3)">Approvals</h2>
+        <h2 class="inline fade" id="header-link1" onclick="setMode(1)">Activities</h2>
+        <h2 class="inline fade" id="header-link2" onclick="setMode(2)">Leaderboards</h2>
+        <h2 class="inline fade" id="header-link3" onclick="setMode(3)">Approvals</h2>
+        <h2 class="inline fade" id="header-link4" onclick="setMode(4)">My Pending Requests</h2>
       </div>
 
 
@@ -241,18 +250,34 @@
       <p id="user-box" style="text-align:center; font-size: 25px"></p>
     </div>
 
+    <div class="center" id="my-pending" style="color:white; text-align: center">
+      <h1 id="submissions-title">Your Pending Activity Submissions</h1>
+      <table id="act-table" style="text-align: center" class="center">
+        <tr>
+          <th>Activity Title</th>
+          <th>Activity Details</th>
+          <th>Activity Value</th>
+          <th>Your Story</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+    </div>
+
     <script type="text/javascript" name="page-controller">
       let l1 = document.getElementById('header-link1');
       let l2 = document.getElementById('header-link2');
       let l3 = document.getElementById('header-link3');
+      let l4 = document.getElementById('header-link4');
       let mode; // 1 - acts, 2 - members, 3 approvals
       let actDiv = document.getElementById('acts-div');
       let goalDiv = document.getElementById('goal-div');
       let userDiv = document.getElementById('user-div');
       let appDiv = document.getElementById('approve-div');
+      let pendingDiv = document.getElementById('my-pending');
 
       let goalsInit = false;
       let approveInit = false;
+      let subInit = false;
 
       setMode(1);
 
@@ -273,11 +298,14 @@
         l1.style.color = `white`;
         l2.style.color = `white`;
         l3.style.color = `white`;
+        l4.style.color = `white`;
 
         actDiv.style.display = "none";
         goalDiv.style.display = "none";
         userDiv.style.display = "none";
         appDiv.style.display = "none";
+        pendingDiv.style.display = "none";
+
 
 
 
@@ -300,6 +328,15 @@
             setActs();
           }
           approveInit = true;
+        } else if (newMode == 4) {
+          l4.style.color = `#64A2FF`;
+          pendingDiv.style.display = "block";
+
+          if (!subInit) {
+            setSubs();
+          }
+
+          subInit = true;
         }
       }
 
@@ -549,6 +586,10 @@
           setMode(Number(getParameterByName("mode", url)));
         }
 
+        if (currentUser.teacher && currentClass.approval_pool.length > 0) {
+          l3.innerHTML = `Approvals <span style="color:orange; margin-top: 0px; margin-bottom: 0px;" class="inline">(${currentClass.approval_pool.length})<span>`;
+        }
+
         // for (let i = 0; i < currentClass.teachers.length; i++) {
         //   let row = usertable.insertRow();
         //
@@ -743,12 +784,85 @@
             var responseText = xhr.responseText;
 
             if (responseText == "Created") {
-              location.reload()
+              location.href = updateQueryStringParameter(url, `mode`, `3`);
             }
           }
           xhr.send();
 
       }
+    </script>
+
+    <script type="text/javascript">
+      let myActs = Array();
+      let subsTable = document.getElementById('act-table');
+
+
+      function setSubs() {
+
+
+        for (let i = 0; i < currentClass.approval_pool.length; i++) {
+          let act = currentClass.approval_pool[i];
+          if (act.author == currentUser.profile.username) {
+            let finAct = {
+              activity: act,
+              index: i
+            }
+            myActs.push(finAct);
+
+            let row = subsTable.insertRow(1);
+            row.insertCell(0).innerHTML = `${act.activity.title}`;
+            row.insertCell(1).innerHTML = `${act.activity.details}`;
+            row.insertCell(2).innerHTML = `${act.activity.value}`;
+
+            if (finAct.activity.img) {
+              if (finAct.activity.img != "none") {
+                row.insertCell(3).innerHTML = finAct.activity.story + `<br> <img src="${finAct.activity.img}" style="max-width:300px;">`;
+              } else {
+                row.insertCell(3).innerHTML = finAct.activity.story;
+              }
+            } else {
+              row.insertCell(3).innerHTML = finAct.activity.story;
+            }
+            row.insertCell(4).innerHTML = `<button onClick="sendRetactionRequest(${i})">Retract Request</button><br><button onClick="editExistingRequest(${i})">Edit Request</button>`;
+          }
+        }
+
+        if (myActs.length == 0) {
+          subsTable.style.display = "none";
+          document.getElementById('submissions-title').innerHTML = "No pending submissions, you're all good!"
+        }
+      }
+
+      function sendRetactionRequest(id) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
+
+        xhr.onload = function() {
+          if (xhr.responseText == `OK`) {
+            alert("Request retracted!");
+          } else {
+            alert("Attempt failed, sorry bucko...");
+          }
+          location.reload();
+        }
+
+        xhr.send();
+      }
+
+      function editExistingRequest(id) {
+        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
+
+        xhr.onload = function() {
+          if (xhr.responseText == `OK`) {
+            alert("Request modified!!");
+          } else {
+            alert("Attempt failed, sorry bucko...");
+          }
+          location.reload();
+        }
+
+        xhr.send();
+      }
+
     </script>
   </body>
 </html>
