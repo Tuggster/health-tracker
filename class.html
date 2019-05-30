@@ -576,6 +576,8 @@
     </script>
 
     <script type="text/javascript" name="table-manager">
+    let sorted = Array();
+
       function setTable() {
         let userbox = document.getElementById('user-box');
         let userCount = document.getElementById('user-count');
@@ -597,6 +599,27 @@
         //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
         // }
 
+        let highest = 0;
+        let target = 0;
+        let raw = currentClass.members.slice();
+        for (let j = 0; j < currentClass.members.length; j++) {
+          highest = 0;
+          for (let i = 0; i < raw.length; i++) {
+            if (raw[i].score > highest) {
+              target = i;
+              highest = raw[i].score;
+              console.log(raw[i].score);
+            }
+            if (i == raw.length-1 && highest == 0) {
+              target = i;
+              highest = raw[i].score;
+              console.log(raw[i].score);
+            }
+          }
+          console.log(highest);
+          sorted.push(raw.splice(target, 1)[0]);
+        }
+
         let highestScore = 0;
         for (let i = 0; i < currentClass.members.length; i++) {
           let member = currentClass.members[i];
@@ -606,23 +629,23 @@
           }
         }
 
-        for (let i = 0; i < currentClass.members.length; i++) {
-          let member = currentClass.members[i];
+        for (let i = 0; i < sorted.length; i++) {
+          let member = sorted[i];
           let temp = ``;
 
           if (!url.startsWith(`18.220`)) {
-            temp += `\<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px"\>`;
+            temp += `<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px">`;
           } else {
-            temp += `\<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px"\>`;
+            temp += `<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px">`;
           }
 
           if (member.teacher) {
-            temp += `<p style="color:red">★ ${member.nickname}: ${member.score} pts</p>\</a\>`;
+            temp += `<p style="color:red">${i + 1}: ★ ${member.nickname}: ${member.score} pts</p></a>`;
           } else {
             if (member.score == highestScore) {
-              temp += `<p style="color:gold">🎖 ${member.nickname}: ${member.score} pts 🎖<p>\</a\>`;
+              temp += `<p style="color:gold">${i + 1}: 🎖 ${member.nickname}: ${member.score} pts 🎖<p></a>`;
             } else {
-              temp += `<p style="">${member.nickname}: ${member.score} pts <p>\</a\>`;
+              temp += `<p style="">${i + 1}: ${member.nickname}: ${member.score} pts <p></a>`;
             }
           }
           userbox.innerHTML+= temp;
