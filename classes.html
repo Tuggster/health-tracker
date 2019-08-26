@@ -219,7 +219,7 @@
 
 
             let link;
-            if (!url.startsWith(serverIP)) {
+            if (!url.startsWith(serverIP.substring("HTTP://".length))) {
               link = `../health-tracker/class.html?id=${servers[i].id}`;
             } else {
               link = `../class.html?id=${servers[i].id}`;
