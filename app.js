@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 
 const Enmap = require("enmap");
-const enmap = new Enmap({name: "scores"});
-const classes = new Enmap({name: "classes"});
+const enmap = new Enmap({ name: "scores" });
+const classes = new Enmap({ name: "classes" });
 var fs = require("fs");
-
+let info = require("info.js");
+console.log(info.serverIP);
 
 var bodyParser = require('body-parser')
-app.use(bodyParser.json({limit: '50mb'}));       // to support JSON-encoded bodies
+app.use(bodyParser.json({ limit: '50mb' }));       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
@@ -19,8 +20,8 @@ app.use(express.json());       // to support JSON-encoded bodies
 app.use(cors());
 app.use(express.static('../health-tracker'))
 
-Date.prototype.toUnixTime = function() { return this.getTime()/1000|0 };
-Date.time = function() { return new Date().toUnixTime(); }
+Date.prototype.toUnixTime = function () { return this.getTime() / 1000 | 0 };
+Date.time = function () { return new Date().toUnixTime(); }
 
 const userProfile = {
   nameFirst: "John",
@@ -71,11 +72,11 @@ const activitySubmissionTemplate = {
 }
 
 
-app.listen(8080, function() {
+app.listen(8080, function () {
 });
 
-app.get(`/`, function (req,res) {
-	res.send("You've reached pizza hut, how may I help you?");
+app.get(`/`, function (req, res) {
+  res.send("You've reached pizza hut, how may I help you?");
 })
 
 app.get('/user', function (req, res) {
@@ -110,29 +111,29 @@ app.get('/user', function (req, res) {
   }
 });
 
-app.post('/user', function(req, res) {
+app.post('/user', function (req, res) {
   console.log("Recieved post to /user");
 
-   if (req.body.do == "createUser") {
-     if (req.body) {
-       if (!enmap.get(req.body.username)) {
-         let profile = userProfile;
-         profile.id = enmap.size;
-         profile.nameFirst = req.body.nameFirst;
-         profile.nameLast = req.body.nameLast;
-         profile.username = req.body.username;
-         profile.password = req.body.password;
-         profile.token = getRandomInt(999999999999999);
+  if (req.body.do == "createUser") {
+    if (req.body) {
+      if (!enmap.get(req.body.username)) {
+        let profile = userProfile;
+        profile.id = enmap.size;
+        profile.nameFirst = req.body.nameFirst;
+        profile.nameLast = req.body.nameLast;
+        profile.username = req.body.username;
+        profile.password = req.body.password;
+        profile.token = getRandomInt(999999999999999);
 
-         enmap.set(profile.username, profile);
-         res.sendStatus(201);
+        enmap.set(profile.username, profile);
+        res.sendStatus(201);
       } else {
         res.sendStatus(403);
       }
-     }
-   } else {
-     res.sendStatus(404);
-   }
+    }
+  } else {
+    res.sendStatus(404);
+  }
 })
 
 app.post('/class', function (req, res) {
@@ -196,8 +197,8 @@ app.post('/class', function (req, res) {
     let currentClass = classes.get(req.query.classID);
     let act = currentClass.activities[req.query.activityID];
 
-  	console.log(act);
-  	console.log(currentClass.activities);
+    console.log(act);
+    console.log(currentClass.activities);
 
     if (act && currentClass) {
       currentClass.activities.splice(req.query.activityID, 1);
@@ -206,7 +207,7 @@ app.post('/class', function (req, res) {
       res.sendStatus(404);
     }
 
-	classes.set(req.query.classID, currentClass);
+    classes.set(req.query.classID, currentClass);
   }
 
   if (req.query.do == "addActivity") {
@@ -246,31 +247,31 @@ app.post('/class', function (req, res) {
         story: req.body.story,
         date: req.body.date,
         activity: req.body.activity,
-		img: "none",
+        img: "none",
         approved: false
       }
 
-	  if (req.body.img != "none") {
-		let fn = "ayy";
-		if (req.body.img.startsWith(`data:image/png`)){
-			fn = `img/${req.body.author}${Date.time()}.png`;
-			var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
-			act.img = `http://18.220.203.155:8080/${fn}`;
+      if (req.body.img != "none") {
+        let fn = "ayy";
+        if (req.body.img.startsWith(`data:image/png`)) {
+          fn = `img/${req.body.author}${Date.time()}.png`;
+          var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
+          act.img = `http://${info.serverIP}/${fn}`;
 
-			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
-			  console.log(err);
-			});
-		} else {
-			fn = `img/${req.body.author}${Date.time()}.jpg`;
+          require("fs").writeFile(fn, base64Data, 'base64', function (err) {
+            console.log(err);
+          });
+        } else {
+          fn = `img/${req.body.author}${Date.time()}.jpg`;
 
-			var base64Data = req.body.img.replace(/^data:image\/jpeg;base64,/, "");
-			act.img = `http://18.220.203.155:8080/${fn}`;
+          var base64Data = req.body.img.replace(/^data:image\/jpeg;base64,/, "");
+          act.img = `http://${info.serverIP}/${fn}`;
 
-			require("fs").writeFile(fn, base64Data, 'base64', function(err) {
-			  console.log(err);
-			});
-		}
-	   }
+          require("fs").writeFile(fn, base64Data, 'base64', function (err) {
+            console.log(err);
+          });
+        }
+      }
 
       currentClass.approval_pool.push(act);
       classes.set(currentClass.id, currentClass);
@@ -298,13 +299,13 @@ app.post('/class', function (req, res) {
     if (approved == "true") {
       act.approved = true;
       user.score += Number(currentClass.approval_pool[id].activity.value);
-  	  if(currentClass.settings[0]) {
-    		for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
-    		  let g = currentClass.settings[0].goals[i];
+      if (currentClass.settings[0]) {
+        for (let i = 0; i < currentClass.settings[0].goals.length; i++) {
+          let g = currentClass.settings[0].goals[i];
 
-    		  g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
-    		}
-  	  }
+          g.goal_progress += Number(currentClass.approval_pool[id].activity.value);
+        }
+      }
     } else {
       act.approved = false;
     }
@@ -325,7 +326,7 @@ app.post('/class', function (req, res) {
     let cl = classes.get(req.query.classID);
 
     if (cl && req.body) {
-	  console.log(req.body);
+      console.log(req.body);
       let goal = {
         goal_name: "",
         goal_points: 0,
@@ -338,12 +339,12 @@ app.post('/class', function (req, res) {
 
       if (!cl.settings[0]) {
         cl.settings.push({
-			goals: Array()
-		});
+          goals: Array()
+        });
       }
 
       cl.settings[0].goals.push(goal);
-	  console.log(cl.settings[0].goals)
+      console.log(cl.settings[0].goals)
       classes.set(Number(req.query.classID), cl);
       console.log(classes.get(req.query.classID));
       res.sendStatus(200);
@@ -360,27 +361,27 @@ app.post('/class', function (req, res) {
     let cl = classes.get(req.query.classId);
     let index = req.query.index;
 
-	console.log(cl);
+    console.log(cl);
     if (cl != "undefined") {
       cl.approval_pool.splice(index, 1);
-		console.log(cl.approval_pool[index]);
+      console.log(cl.approval_pool[index]);
       classes.set(cl.id, cl);
       res.sendStatus(200);
     } else {
       res.sendStatus(400);
     }
   }
-  
-   if (req.query.do == "editStory") {
+
+  if (req.query.do == "editStory") {
     let cl = classes.get(req.query.classId);
     let index = req.query.index;
     let story = req.query.story;
 
-	console.log(cl);
+    console.log(cl);
     if (cl != "undefined") {
-	  let newAct = cl.approval_pool[index];
-	  newAct.story = story;
-		
+      let newAct = cl.approval_pool[index];
+      newAct.story = story;
+
       cl.approval_pool[index] = newAct;
 
       classes.set(cl.id, cl);
@@ -391,7 +392,7 @@ app.post('/class', function (req, res) {
   }
 })
 
-app.get('/class', function(req, res) {
+app.get('/class', function (req, res) {
   if (req.query.do == "getClasses" && req.query.username) {
     let user = enmap.get(req.query.username);
     if (!user) return;
@@ -465,9 +466,9 @@ function createClass(className, creator) {
       teacher.teacher = true;
       teacher.nickname = creator.username;
 
-	  classSend.settings.push({
-		goals: Array()
-	  });
+      classSend.settings.push({
+        goals: Array()
+      });
 
       classSend.members = Array(teacher);
 
