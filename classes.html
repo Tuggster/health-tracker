@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Class Management</title>
+    <script src="info.js" charset="utf-8"></script>
+
     <style media="screen">
       th, td {
         border-bottom: 1px solid #ddd;
@@ -143,7 +145,7 @@
           }
         }
 
-        let xhr = createCORSRequest("POST", "http://18.220.203.155:8080/class");
+        let xhr = createCORSRequest("POST", `${serverIP}/class`);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         let classData = {
@@ -175,7 +177,7 @@
         } else if (id == "") {
           return joinClass();
         } else {
-          let xhr = createCORSRequest("POST", "http://18.220.203.155:8080/class");
+          let xhr = createCORSRequest("POST", `${serverIP}/class`);
           xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
           xhr.onload = function() {
@@ -202,7 +204,7 @@
       }
 
       function getClasses() {
-        let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClasses&username=${username}`);
+        let xhr = createCORSRequest("GET", `${serverIP}/class?do=getClasses&username=${username}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;

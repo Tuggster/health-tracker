@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Review Your Submissions</title>
+    <script src="info.js" charset="utf-8"></script>
 
     <script type="text/javascript">
 
@@ -103,7 +104,7 @@
       let currentClass;
       let currentUser;
 
-      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
+      let xhr = createCORSRequest("GET", `${serverIP}/class?do=getClass&classID=${getParameterByName("id")}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;
@@ -177,7 +178,7 @@
       }
 
       function sendRetactionRequest(id) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
+        let xhr = createCORSRequest("POST", `${serverIP}/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
 
         xhr.onload = function() {
           if (xhr.responseText == `OK`) {
@@ -192,7 +193,7 @@
       }
 
       function editExistingRequest(id) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
+        let xhr = createCORSRequest("POST", `${serverIP}/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
 
         xhr.onload = function() {
           if (xhr.responseText == `OK`) {

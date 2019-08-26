@@ -1,152 +1,162 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300&display=swap" rel="stylesheet">
-    <meta charset="utf-8">
-    <title>Class view</title>
 
-    <script type="text/javascript">
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <script src="info.js" charset="utf-8"></script>
 
-      let href = location.href;
-      let url = href.replace(/(^\w+:|^)\/\//, '');
+  <title>Class view</title>
 
-      var weekday = new Array(7);
-      weekday[0] =  "Sunday";
-      weekday[1] = "Monday";
-      weekday[2] = "Tuesday";
-      weekday[3] = "Wednesday";
-      weekday[4] = "Thursday";
-      weekday[5] = "Friday";
-      weekday[6] = "Saturday";
+  <script type="text/javascript">
 
-      function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, '\\$&');
-        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    let href = location.href;
+    let url = href.replace(/(^\w+:|^)\/\//, '');
+
+    var weekday = new Array(7);
+    weekday[0] = "Sunday";
+    weekday[1] = "Monday";
+    weekday[2] = "Tuesday";
+    weekday[3] = "Wednesday";
+    weekday[4] = "Thursday";
+    weekday[5] = "Friday";
+    weekday[6] = "Saturday";
+
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    function updateQueryStringParameter(uri, key, value) {
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
       }
-
-      function updateQueryStringParameter(uri, key, value) {
-        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-        if (uri.match(re)) {
-          return uri.replace(re, '$1' + key + "=" + value + '$2');
-        }
-        else {
-          return uri + separator + key + "=" + value;
-        }
+      else {
+        return uri + separator + key + "=" + value;
       }
+    }
 
-      function createCORSRequest(method, url) {
-        var xhr = new XMLHttpRequest();
-        if ("withCredentials" in xhr) {
-          xhr.open(method, url, true);
-        } else if (typeof XDomainRequest != "undefined") {
-          xhr = new XDomainRequest();
-          xhr.open(method, url);
-        } else {
-          xhr = null;
-        }
-        return xhr;
+    function createCORSRequest(method, url) {
+      var xhr = new XMLHttpRequest();
+      if ("withCredentials" in xhr) {
+        xhr.open(method, url, true);
+      } else if (typeof XDomainRequest != "undefined") {
+        xhr = new XDomainRequest();
+        xhr.open(method, url);
+      } else {
+        xhr = null;
       }
+      return xhr;
+    }
 
-	     function toDataURL(url, callback) {
-		  var xhr = new XMLHttpRequest();
-		  xhr.onload = function() {
-			var reader = new FileReader();
-			reader.onloadend = function() {
-			  callback(reader.result);
-			}
-			reader.readAsDataURL(xhr.response);
-		  };
-		  xhr.open('GET', url);
-		  xhr.responseType = 'blob';
-		  xhr.send();
-	  }
-
-      function encodeImageFileAsURL(element, callback) {
-        var file = element.files[0];
+    function toDataURL(url, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
         var reader = new FileReader();
-        reader.onloadend = function() {
-          console.log('RESULT', reader.result);
+        reader.onloadend = function () {
           callback(reader.result);
         }
-        reader.readAsDataURL(file);
-      }
+        reader.readAsDataURL(xhr.response);
+      };
+      xhr.open('GET', url);
+      xhr.responseType = 'blob';
+      xhr.send();
+    }
 
-    </script>
+    function encodeImageFileAsURL(element, callback) {
+      var file = element.files[0];
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        console.log('RESULT', reader.result);
+        callback(reader.result);
+      }
+      reader.readAsDataURL(file);
+    }
+
+  </script>
 
 
-    <style media="screen">
-      th, td, table {
-        border: 1px solid #ddd;
-        border-spacing: 0px;
-        border-collapse: collapse;
-      }
+  <style media="screen">
+    th,
+    td,
+    table {
+      border: 1px solid #ddd;
+      border-spacing: 0px;
+      border-collapse: collapse;
+    }
 
-      th {
-        text-align: left;
-      }
+    th {
+      text-align: left;
+    }
 
-      th, td {
-        padding: 15px;
-        text-align: left;
-      }
+    th,
+    td {
+      padding: 15px;
+      text-align: left;
+    }
 
-      .goal-title {
-        display: inline-block;
-        margin-right: 15px;
-      }
+    .goal-title {
+      display: inline-block;
+      margin-right: 15px;
+    }
 
-      a {
-         color:inherit;
-      }
+    a {
+      color: inherit;
+    }
 
-      .goal-value {
-        display: inline-block;
-      }
+    .goal-value {
+      display: inline-block;
+    }
 
-      h1, h2 {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-        margin-top: 0px;
-        margin-bottom: 3px;
-      }
-      .inline {
-        display: inline-block;
-        text-align: center;
-        padding: 5px;
-      }
-      .center {
-        text-align: center;
-        margin: auto;
-        width: 50%;
-        padding: 10px;
-      }
+    h1,
+    h2 {
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+      margin-top: 0px;
+      margin-bottom: 3px;
+    }
 
-      .approve-fade-in {
-        -webkit-transition: 0.5s;
-        -moz-transition: 0.5s;
-        -ms-transition: 0.5s;
-        -o-transition: 0.5s;
-        transition: 0.5s;
-        color: red;
-      }
+    .inline {
+      display: inline-block;
+      text-align: center;
+      padding: 5px;
+    }
 
-      .fade {
-        -webkit-transition: 0.5s;
-        -moz-transition: 0.5s;
-        -ms-transition: 0.5s;
-        -o-transition: 0.5s;
-        transition: 0.5s;
-      }
-    </style>
-  </head>
-  <body style="background-color: #0C0C0C">
-    <!-- <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
+    .center {
+      text-align: center;
+      margin: auto;
+      width: 50%;
+      padding: 10px;
+    }
+
+    .approve-fade-in {
+      -webkit-transition: 0.5s;
+      -moz-transition: 0.5s;
+      -ms-transition: 0.5s;
+      -o-transition: 0.5s;
+      transition: 0.5s;
+      color: red;
+    }
+
+    .fade {
+      -webkit-transition: 0.5s;
+      -moz-transition: 0.5s;
+      -ms-transition: 0.5s;
+      -o-transition: 0.5s;
+      transition: 0.5s;
+    }
+  </style>
+</head>
+
+<body style="background-color: #0C0C0C">
+  <!-- <div class="" name="title-bar" style="margin-left: 27px; margin-top:27px; color:#707070">
       <h1 id="name" style="padding-bottom: 0px; padding-top: 5px; margin: 0px; font-size: 35pt">Horse Lounge</h1>
       <h2 id="idf" style="padding-top: 5px; margin: 0px; float:left">ID: awdawdawdawd</h2>
       <h2 id="hidebtn" style="margin-left: 15px; margin-top: 4px; float:left; color:white"> <button type="button" name="button" style="border:none; background-color:transparent; color: white;" onclick="toggleGoals()">Click to show/hide goals</button></h2>
@@ -188,9 +198,9 @@
       </div>
     </div> -->
 
-    <header style="color: white; background: #3B3B3B">
-      <h1 id="name">Class name</h1>
-      <h2 id="idf">Class ID</h1>
+  <header style="color: white; background: #3B3B3B">
+    <h1 id="name">Class name</h1>
+    <h2 id="idf">Class ID</h1>
       <div class="center">
         <h2 class="inline fade" id="header-link1" onclick="setMode(1)">Activities</h2>
         <h2 class="inline fade" id="header-link2" onclick="setMode(2)">Leaderboards</h2>
@@ -199,693 +209,700 @@
       </div>
 
 
-    </header>
-    <br><br>
-    <div class="acts" id="acts-div" style="color: white">
+  </header>
+  <br><br>
+  <div class="acts" id="acts-div" style="color: white">
 
-      <div class="center" style="display:none;" id="submit-panel">
-        <em><p id="activity-name-box">name</p></em>
-        <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed." style="resize:none;" id="activity-story-box"></textarea><br>
-        <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time. Please only hit submit once.</p>
-        <button type="submit" name="button" onclick="submitActivity()" id="submit-button">Submit</button>
-      </div>
-
-      <div class="center" id="admin-buttons">
-        <button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new activity</button>
-        <a type="button" name="button" style="display: inline-block" id="approve-button" href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a>
-      </div>
-      <table class="center" id="activity-table">
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Value</th>
-          <th>Actions</th>
-        </tr>
-      </table>
-    </div>
-    <br><br>
-    <div class="goals" id="goal-div" style="color: white;">
-      <h2 style="margin-bottom: 0px"  class="inline">Goals</h2>
-      <button type="button" id="add-goal" onclick="addGoal()" style="display: none;" class="inline">Add Goal</button>
-      <div style="margin-left:5px" id="goal-box" class="" style=""> </div>
-
+    <div class="center" style="display:none;" id="submit-panel">
+      <em>
+        <p id="activity-name-box">name</p>
+      </em>
+      <textarea rows="4" cols="50" placeholder="Enter the story which describes the activity you've completed."
+        style="resize:none;" id="activity-story-box"></textarea><br>
+      <input type="file" id="image-upload" value=""> Upload an Image (Optional) <p>Uploading large images can take time.
+        Please only hit submit once.</p>
+      <button type="submit" name="button" onclick="submitActivity()" id="submit-button">Submit</button>
     </div>
 
-    <div class="center" id="approve-div" style="color: white;">
-      <h1 id="appName">Activity completion requests for "default"</h1>
-      <h2 id="idf"></h2>
-      <table id="table">
-        <tr>
-          <th>Username</th>
-          <th>Activity name</th>
-          <th>Activity description</th>
-          <th>User story</th>
-          <th>Date of submission</th>
-          <th>Actions</th>
-        </tr>
-      </table>
+    <div class="center" id="admin-buttons">
+      <button type="button" name="button" style="display: inline-block" onclick="addActivity()">Add new
+        activity</button>
+      <a type="button" name="button" style="display: inline-block" id="approve-button"
+        href="../health-tracker/approve.html?classID">View activity requests (0 unread)</a>
     </div>
-    <div class="users" class="user-div" id="user-div" style="color:white" style="text-align:center">
-      <h1 id="user-count">User count: </h1>
-      <p id="user-box" style="text-align:center; font-size: 25px"></p>
-    </div>
+    <table class="center" id="activity-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Value</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+  </div>
+  <br><br>
+  <div class="goals" id="goal-div" style="color: white;">
+    <h2 style="margin-bottom: 0px" class="inline">Goals</h2>
+    <button type="button" id="add-goal" onclick="addGoal()" style="display: none;" class="inline">Add Goal</button>
+    <div style="margin-left:5px" id="goal-box" class="" style=""> </div>
 
-    <div class="center" id="my-pending" style="color:white; text-align: center">
-      <h1 id="submissions-title">Your Pending Activity Submissions</h1>
-      <table id="act-table" style="text-align: center" class="center">
-        <tr>
-          <th>Activity Title</th>
-          <th>Activity Details</th>
-          <th>Activity Value</th>
-          <th>Your Story</th>
-          <th>Actions</th>
-        </tr>
-      </table>
-    </div>
+  </div>
 
-    <script type="text/javascript" name="page-controller">
-      let l1 = document.getElementById('header-link1');
-      let l2 = document.getElementById('header-link2');
-      let l3 = document.getElementById('header-link3');
-      let l4 = document.getElementById('header-link4');
-      let mode; // 1 - acts, 2 - members, 3 approvals
-      let actDiv = document.getElementById('acts-div');
-      let goalDiv = document.getElementById('goal-div');
-      let userDiv = document.getElementById('user-div');
-      let appDiv = document.getElementById('approve-div');
-      let pendingDiv = document.getElementById('my-pending');
+  <div class="center" id="approve-div" style="color: white;">
+    <h1 id="appName">Activity completion requests for "default"</h1>
+    <h2 id="idf"></h2>
+    <table id="table">
+      <tr>
+        <th>Username</th>
+        <th>Activity name</th>
+        <th>Activity description</th>
+        <th>User story</th>
+        <th>Date of submission</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+  </div>
+  <div class="users" class="user-div" id="user-div" style="color:white" style="text-align:center">
+    <h1 id="user-count">User count: </h1>
+    <p id="user-box" style="text-align:center; font-size: 25px"></p>
+  </div>
 
-      let goalsInit = false;
-      let approveInit = false;
-      let subInit = false;
+  <div class="center" id="my-pending" style="color:white; text-align: center">
+    <h1 id="submissions-title">Your Pending Activity Submissions</h1>
+    <table id="act-table" style="text-align: center" class="center">
+      <tr>
+        <th>Activity Title</th>
+        <th>Activity Details</th>
+        <th>Activity Value</th>
+        <th>Your Story</th>
+        <th>Actions</th>
+      </tr>
+    </table>
+  </div>
 
-      setMode(1);
+  <script type="text/javascript" name="page-controller">
+    let l1 = document.getElementById('header-link1');
+    let l2 = document.getElementById('header-link2');
+    let l3 = document.getElementById('header-link3');
+    let l4 = document.getElementById('header-link4');
+    let mode; // 1 - acts, 2 - members, 3 approvals
+    let actDiv = document.getElementById('acts-div');
+    let goalDiv = document.getElementById('goal-div');
+    let userDiv = document.getElementById('user-div');
+    let appDiv = document.getElementById('approve-div');
+    let pendingDiv = document.getElementById('my-pending');
 
-      function setMode(newMode) {
+    let goalsInit = false;
+    let approveInit = false;
+    let subInit = false;
 
-        if (newMode == 3 && !currentUser.teacher) {
-          l3.classList.add("approve-fade-in")
-          l3.style.color = "red";
-          setTimeout(function() {
-            l3.style.color = "white";
-          }, 500);
+    setMode(1);
 
+    function setMode(newMode) {
+
+      if (newMode == 3 && !currentUser.teacher) {
+        l3.classList.add("approve-fade-in")
+        l3.style.color = "red";
+        setTimeout(function () {
+          l3.style.color = "white";
+        }, 500);
+
+        return;
+      }
+      //window.history.pushState('page2', 'Title', updateQueryStringParameter(url, "mode", newMode.toString()));
+
+      mode = newMode;
+      l1.style.color = `white`;
+      l2.style.color = `white`;
+      l3.style.color = `white`;
+      l4.style.color = `white`;
+
+      actDiv.style.display = "none";
+      goalDiv.style.display = "none";
+      userDiv.style.display = "none";
+      appDiv.style.display = "none";
+      pendingDiv.style.display = "none";
+
+
+
+
+      if (newMode == 1) { // yeah i know i could have used switch here leave me alone
+        l1.style.color = `#64A2FF`;
+        actDiv.style.display = "block";
+      } else if (newMode == 2) {
+        if (!goalsInit) {
+          loadGoals();
+          goalsInit = true;
+        }
+        l2.style.color = `#64A2FF`;
+        goalDiv.style.display = "block";
+        userDiv.style.display = "block";
+      } else if (newMode == 3) {
+        l3.style.color = `#64A2FF`;
+        appDiv.style.display = "block";
+
+        if (!approveInit) {
+          setActs();
+        }
+        approveInit = true;
+      } else if (newMode == 4) {
+        l4.style.color = `#64A2FF`;
+        pendingDiv.style.display = "block";
+
+        if (!subInit) {
+          setSubs();
+        }
+
+        subInit = true;
+      }
+    }
+
+  </script>
+
+  <script type="text/javascript">
+    let name = document.getElementById('name');
+    let id = document.getElementById('idf');
+    let currentClass;
+    let currentUser;
+
+    let xhr = createCORSRequest("GET", `${serverIP}/class?do=getClass&classID=${getParameterByName("id")}`);
+
+    xhr.onload = function () {
+      var responseText = xhr.responseText;
+      let response = JSON.parse(responseText);
+
+      if (response.id != getParameterByName("id")) {
+        return console.log("id mismatch!");
+      } else {
+        currentClass = response;
+        name.innerHTML = currentClass.name;
+        id.innerHTML = `ID: ${currentClass.id}`;
+      }
+
+      for (let i = 0; i < currentClass.members.length; i++) {
+        let member = currentClass.members[i];
+
+        if (member.profile.username == localStorage.getItem("username")) {
+          currentUser = member;
+        }
+      }
+
+      fillAcTable();
+      setTable();
+
+    }
+    xhr.send();
+
+
+  </script>
+
+  <script type="text/javascript" id="activity-manager">
+    let titleBox = document.getElementById('activity-name-box');
+    let storyBox = document.getElementById('activity-story-box');
+
+    let submitPanel = document.getElementById('submit-panel');
+    let adminPanel = document.getElementById('admin-buttons');
+
+    let approveButton = document.getElementById('approve-button');
+    let submitButton = document.getElementById('submit-button');
+    let subButton = document.getElementById('submissions-link')
+    let activitytable = document.getElementById('activity-table');
+
+
+
+    let selectedActivity;
+
+    function prepareActivity(act) {
+      submitPanel.style.display = "block";
+      selectedActivity = currentClass.activities[act];
+      titleBox.innerHTML = `${selectedActivity.title}`;
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+      console.log(selectedActivity);
+    }
+
+    function removeActivity(act) {
+      selectedActivity = currentClass.activities[act];
+      console.log(selectedActivity);
+      console.log(act);
+
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=removeActivity&classID=${currentClass.id}&activityID=${act}`);
+
+      xhr.onload = function () {
+        console.log(`removed activity ${act}`);
+      };
+
+      xhr.send();
+      location.reload();
+    }
+
+    function submitActivity() {
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=submitActivity&classID=${currentClass.id}`);
+      let img = document.getElementById(`image-upload`);
+      let imgEncoded;
+
+      if (img.files[0]) {
+        if (img.files[0].size > 50000000) {
+          alert("Max image size 50mb. Sorry! :(");
           return;
         }
-        //window.history.pushState('page2', 'Title', updateQueryStringParameter(url, "mode", newMode.toString()));
-
-        mode = newMode;
-        l1.style.color = `white`;
-        l2.style.color = `white`;
-        l3.style.color = `white`;
-        l4.style.color = `white`;
-
-        actDiv.style.display = "none";
-        goalDiv.style.display = "none";
-        userDiv.style.display = "none";
-        appDiv.style.display = "none";
-        pendingDiv.style.display = "none";
-
-
-
-
-        if (newMode == 1) { // yeah i know i could have used switch here leave me alone
-          l1.style.color = `#64A2FF`;
-          actDiv.style.display = "block";
-        } else if (newMode == 2) {
-          if (!goalsInit) {
-            loadGoals();
-            goalsInit = true;
+        encodeImageFileAsURL(img, function (result) {
+          if (result) {
+            imgEncoded = result.split(`,`)[1];
+            console.log(imgEncoded);
+            submitButton.innerHTML = `Uploading, please wait.`;
+            submitButton.disabled = true;
+            submitWithImage(result);
           }
-          l2.style.color = `#64A2FF`;
-          goalDiv.style.display = "block";
-          userDiv.style.display = "block";
-        } else if (newMode == 3) {
-          l3.style.color = `#64A2FF`;
-          appDiv.style.display = "block";
+        });
+        return;
+      }
 
-          if (!approveInit) {
-            setActs();
-          }
-          approveInit = true;
-        } else if (newMode == 4) {
-          l4.style.color = `#64A2FF`;
-          pendingDiv.style.display = "block";
 
-          if (!subInit) {
-            setSubs();
-          }
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-          subInit = true;
+      xhr.onload = function () {
+        var responseText = xhr.responseText;
+
+        if (responseText == "Created") {
+          alert("Success!");
+          submitPanel.style.display = "none";
+        } else {
+          alert("Failed to submit activity!");
+        }
+
+        if (!url.startsWith(`18.220`)) {
+          subButton.href = `../health-tracker/submissions.html?id=${currentClass.id}`;
+        } else {
+          subButton.href = `../submissions.html?id=${currentClass.id}`;
+        }
+
+      }
+
+      /*
+        const activitySubmissionTemplate = {
+          author: "Tuggi",
+          story: "I did a walking",
+          date: new Date(),
+          approved: false
+        }
+      */
+
+      let date = new Date();
+
+      var n = weekday[date.getDay()];
+
+      let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+      console.log(dateFormatted);
+      let act = {
+        author: currentUser.profile.username,
+        story: storyBox.value,
+        date: dateFormatted,
+        activity: selectedActivity,
+        img: "none",
+        approved: false
+      }
+
+      let temp = {
+        water: "hole"
+      }
+
+      xhr.send(JSON.stringify(act));
+    }
+
+    function submitWithImage(result) {
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=submitActivity&classID=${currentClass.id}`);
+
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+      xhr.onload = function () {
+        var responseText = xhr.responseText;
+
+        if (responseText == "Created") {
+          alert("Success!");
+          submitPanel.style.display = "none";
+          submitButton.innerHTML = `Submit`;
+
+          submitButton.disabled = false;
+        } else {
+          alert("Failed to submit activity!");
+        }
+
+      }
+
+      /*
+        const activitySubmissionTemplate = {
+          author: "Tuggi",
+          story: "I did a walking",
+          date: new Date(),
+          approved: false
+        }
+      */
+
+      let date = new Date();
+
+      var n = weekday[date.getDay()];
+
+      let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
+      console.log(dateFormatted);
+      let act = {
+        author: currentUser.profile.username,
+        story: storyBox.value,
+        date: dateFormatted,
+        activity: selectedActivity,
+        img: "none",
+        approved: false
+      }
+
+      act.img = result;
+
+      let temp = {
+        water: "hole"
+      }
+
+      xhr.send(JSON.stringify(act));
+    }
+
+    function fillAcTable() {
+      if (!currentUser.teacher) {
+        adminPanel.style.display = "none";
+      } else {
+        approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
+        if (url.startsWith(`18.220`)) {
+          approveButton.href = `../approve.html?id=${currentClass.id}`
+        } else {
+          approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
         }
       }
 
-    </script>
+      console.log(currentClass.activities);
+      for (let i = 0; i < currentClass.activities.length; i++) {
+        let event = currentClass.activities[i];
+        let row = activitytable.insertRow(1);
 
-    <script type="text/javascript">
-      let name = document.getElementById('name');
-      let id = document.getElementById('idf');
-      let currentClass;
-      let currentUser;
+        row.insertCell(0).innerHTML = event.title;
+        row.insertCell(1).innerHTML = event.details;
+        row.insertCell(2).innerHTML = event.value + " points";
+        let r3 = row.insertCell(3)
+        r3.innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>`;
+        if (currentUser.teacher) {
+          r3.innerHTML += `\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`
+        }
+      }
+    }
+  </script>
 
-      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
+  <script type="text/javascript" name="table-manager">
+    let sorted = Array();
 
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
-          let response = JSON.parse(responseText);
+    function setTable() {
+      let userbox = document.getElementById('user-box');
+      let userCount = document.getElementById('user-count');
 
-          if (response.id != getParameterByName("id")) {
-            return console.log("id mismatch!");
+      userCount.innerHTML = `Users: (${currentClass.members.length})`;
+
+      if (Number(getParameterByName("mode", url))) {
+        setMode(Number(getParameterByName("mode", url)));
+      }
+
+      if (currentUser.teacher && currentClass.approval_pool.length > 0) {
+        l3.innerHTML = `Approvals <span style="color:orange; margin-top: 0px; margin-bottom: 0px;" class="inline">(${currentClass.approval_pool.length})<span>`;
+      }
+
+      // for (let i = 0; i < currentClass.teachers.length; i++) {
+      //   let row = usertable.insertRow();
+      //
+      //   row.insertCell(0).innerHTML = `<p style="color:red;">★ ${currentClass.teachers[i].nickname}</p>`;
+      //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
+      // }
+
+      let highest = 0;
+      let target = 0;
+      let raw = currentClass.members.slice();
+      for (let j = 0; j < currentClass.members.length; j++) {
+        highest = 0;
+        for (let i = 0; i < raw.length; i++) {
+          if (raw[i].score > highest) {
+            target = i;
+            highest = raw[i].score;
+            console.log(raw[i].score);
+          }
+          if (i == raw.length - 1 && highest == 0) {
+            target = i;
+            highest = raw[i].score;
+            console.log(raw[i].score);
+          }
+        }
+        console.log(highest);
+        sorted.push(raw.splice(target, 1)[0]);
+      }
+
+      let highestScore = 0;
+      for (let i = 0; i < currentClass.members.length; i++) {
+        let member = currentClass.members[i];
+
+        if (member.score > highestScore) {
+          highestScore = member.score;
+        }
+      }
+
+      for (let i = 0; i < sorted.length; i++) {
+        let member = sorted[i];
+        let temp = ``;
+
+        if (!url.startsWith(`18.220`)) {
+          temp += `<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px">`;
+        } else {
+          temp += `<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px">`;
+        }
+
+        if (member.teacher) {
+          temp += `<p style="color:red">${i + 1}: ★ ${member.nickname}: ${member.score} pts</p></a>`;
+        } else {
+          if (member.score == highestScore) {
+            temp += `<p style="color:gold">${i + 1}: 🎖 ${member.nickname}: ${member.score} pts 🎖<p></a>`;
           } else {
-            currentClass = response;
-            name.innerHTML = currentClass.name;
-            id.innerHTML = `ID: ${currentClass.id}`;
+            temp += `<p style="">${i + 1}: ${member.nickname}: ${member.score} pts <p></a>`;
           }
-
-          for (let i = 0; i < currentClass.members.length; i++) {
-            let member = currentClass.members[i];
-
-            if (member.profile.username == localStorage.getItem("username")) {
-              currentUser = member;
-            }
-          }
-
-          fillAcTable();
-          setTable();
-
         }
-        xhr.send();
+        userbox.innerHTML += temp;
+      }
+    }
 
+    function addActivity() {
+      let title = prompt("Provide an activity title.");
+      if (title == null) return;
 
-    </script>
+      let details = prompt("Enter activity details.\n(What a user must do to earn their points.)");
+      if (details == null) return;
 
-    <script type="text/javascript" id="activity-manager">
-      let titleBox = document.getElementById('activity-name-box');
-      let storyBox = document.getElementById('activity-story-box');
-
-      let submitPanel = document.getElementById('submit-panel');
-      let adminPanel = document.getElementById('admin-buttons');
-
-      let approveButton = document.getElementById('approve-button');
-      let submitButton = document.getElementById('submit-button');
-      let subButton = document.getElementById('submissions-link')
-      let activitytable = document.getElementById('activity-table');
-
-
-
-      let selectedActivity;
-
-      function prepareActivity(act) {
-        submitPanel.style.display = "block";
-        selectedActivity = currentClass.activities[act];
-        titleBox.innerHTML = `${selectedActivity.title}`;
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-        console.log(selectedActivity);
+      let value = prompt("Enter activity value.\n(The points a user will receive upon completion.)");
+      if (value == null) return;
+      if (isNaN(Number(value))) {
+        return alert("Aborted! Please provide a number value.");
       }
 
-      function removeActivity(act) {
-        selectedActivity = currentClass.activities[act];
-        console.log(selectedActivity);
-        console.log(act);
+      let activity = {
+        title: title,
+        details: details,
+        value: value
+      }
 
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=removeActivity&classID=${currentClass.id}&activityID=${act}`);
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=addActivity&classID=${currentClass.id}`);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-        xhr.onload = function() {
-          console.log(`removed activity ${act}`);
-        };
-
-        xhr.send();
+      xhr.onload = function () {
+        var responseText = xhr.responseText;
         location.reload();
       }
 
-      function submitActivity() {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
-        let img = document.getElementById(`image-upload`);
-        let imgEncoded;
+      xhr.send(JSON.stringify(activity));
+    }
+  </script>
 
-        if (img.files[0]) {
-          if (img.files[0].size > 50000000) {
-            alert("Max image size 50mb. Sorry! :(");
-            return;
-          }
-          encodeImageFileAsURL(img, function(result) {
-            if (result) {
-              imgEncoded = result.split(`,`)[1];
-              console.log(imgEncoded);
-              submitButton.innerHTML = `Uploading, please wait.`;
-              submitButton.disabled = true;
-              submitWithImage(result);
-            }
-          });
-          return;
-        }
+  <script type="text/javascript" name="goal-manager">
+    let addButton;
+    let goalBox;
 
 
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
+    function loadGoals() {
+      let goals = currentClass.settings[0].goals;
 
-          if (responseText == "Created") {
-            alert("Success!");
-            submitPanel.style.display = "none";
-          } else {
-            alert("Failed to submit activity!");
-          }
+      goalBox = document.getElementById('goal-box');
+      addButton = document.getElementById('add-goal');
 
-          if (!url.startsWith(`18.220`)) {
-            subButton.href = `../health-tracker/submissions.html?id=${currentClass.id}`;
-          } else {
-            subButton.href = `../submissions.html?id=${currentClass.id}`;
-          }
-
-        }
-
-        /*
-          const activitySubmissionTemplate = {
-            author: "Tuggi",
-            story: "I did a walking",
-            date: new Date(),
-            approved: false
-          }
-        */
-
-        let date = new Date();
-
-        var n = weekday[date.getDay()];
-
-        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
-        console.log(dateFormatted);
-        let act = {
-          author: currentUser.profile.username,
-          story: storyBox.value,
-          date: dateFormatted,
-          activity: selectedActivity,
-          img: "none",
-          approved: false
-        }
-
-        let temp = {
-          water: "hole"
-        }
-
-        xhr.send(JSON.stringify(act));
+      if (currentUser.teacher) {
+        addButton.style.display = "inline-block"
+        console.log("Teacher, displaying button");
+      } else {
+        console.log("Student, hiding button");
+        addButton.style.display = "none";
       }
 
-      function submitWithImage(result) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=submitActivity&classID=${currentClass.id}`);
-
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
-
-          if (responseText == "Created") {
-            alert("Success!");
-            submitPanel.style.display = "none";
-            submitButton.innerHTML = `Submit`;
-
-            submitButton.disabled = false;
-          } else {
-            alert("Failed to submit activity!");
-          }
-
-        }
-
-        /*
-          const activitySubmissionTemplate = {
-            author: "Tuggi",
-            story: "I did a walking",
-            date: new Date(),
-            approved: false
-          }
-        */
-
-        let date = new Date();
-
-        var n = weekday[date.getDay()];
-
-        let dateFormatted = `${n}, ${date.getMonth()}-${date.getDate()}-${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()}`;
-        console.log(dateFormatted);
-        let act = {
-          author: currentUser.profile.username,
-          story: storyBox.value,
-          date: dateFormatted,
-          activity: selectedActivity,
-          img: "none",
-          approved: false
-        }
-
-        act.img = result;
-
-        let temp = {
-          water: "hole"
-        }
-
-        xhr.send(JSON.stringify(act));
+      if (!goals) {
+        return noGoals();
       }
 
-      function fillAcTable() {
-        if (!currentUser.teacher) {
-          adminPanel.style.display = "none";
-        } else {
-          approveButton.innerHTML = `View activity requests (${currentClass.approval_pool.length} unread)`;
-          if (url.startsWith(`18.220`)) {
-            approveButton.href = `../approve.html?id=${currentClass.id}`
+      if (goals.length > 0) {
+        for (let i = 0; i < goals.length; i++) {
+          let g = goals[i];
+
+          if (g.goal_progress >= g.goal_points) {
+            goalBox.innerHTML += `\<p\>${g.goal_name}: Completed!\<p\>`
           } else {
-            approveButton.href = `../health-tracker/approve.html?id=${currentClass.id}`;
-          }
-        }
-
-        console.log(currentClass.activities);
-        for (let i = 0; i < currentClass.activities.length; i++) {
-          let event = currentClass.activities[i];
-          let row = activitytable.insertRow(1);
-
-          row.insertCell(0).innerHTML = event.title;
-          row.insertCell(1).innerHTML = event.details;
-          row.insertCell(2).innerHTML = event.value + " points";
-          let r3 = row.insertCell(3)
-            r3.innerHTML = `\<button onclick=\"prepareActivity(${i})\"\>I did this\</button\>\<br\>`;
-          if (currentUser.teacher) {
-            r3.innerHTML += `\<button onclick=\"removeActivity(${i})\"\>Remove Activity\</button\>`
-          }
-        }
-      }
-    </script>
-
-    <script type="text/javascript" name="table-manager">
-    let sorted = Array();
-
-      function setTable() {
-        let userbox = document.getElementById('user-box');
-        let userCount = document.getElementById('user-count');
-
-        userCount.innerHTML = `Users: (${currentClass.members.length})`;
-
-        if (Number(getParameterByName("mode", url))) {
-          setMode(Number(getParameterByName("mode", url)));
-        }
-
-        if (currentUser.teacher && currentClass.approval_pool.length > 0) {
-          l3.innerHTML = `Approvals <span style="color:orange; margin-top: 0px; margin-bottom: 0px;" class="inline">(${currentClass.approval_pool.length})<span>`;
-        }
-
-        // for (let i = 0; i < currentClass.teachers.length; i++) {
-        //   let row = usertable.insertRow();
-        //
-        //   row.insertCell(0).innerHTML = `<p style="color:red;">★ ${currentClass.teachers[i].nickname}</p>`;
-        //   row.insertCell(1).innerHTML = `${currentClass.teachers[i].score} pts`;
-        // }
-
-        let highest = 0;
-        let target = 0;
-        let raw = currentClass.members.slice();
-        for (let j = 0; j < currentClass.members.length; j++) {
-          highest = 0;
-          for (let i = 0; i < raw.length; i++) {
-            if (raw[i].score > highest) {
-              target = i;
-              highest = raw[i].score;
-              console.log(raw[i].score);
-            }
-            if (i == raw.length-1 && highest == 0) {
-              target = i;
-              highest = raw[i].score;
-              console.log(raw[i].score);
-            }
-          }
-          console.log(highest);
-          sorted.push(raw.splice(target, 1)[0]);
-        }
-
-        let highestScore = 0;
-        for (let i = 0; i < currentClass.members.length; i++) {
-          let member = currentClass.members[i];
-
-          if (member.score > highestScore) {
-            highestScore = member.score;
-          }
-        }
-
-        for (let i = 0; i < sorted.length; i++) {
-          let member = sorted[i];
-          let temp = ``;
-
-          if (!url.startsWith(`18.220`)) {
-            temp += `<a href="../health-tracker/member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin-top:0px">`;
-          } else {
-            temp += `<a href="../member.html?user=${member.profile.username}&id=${currentClass.id}" style="margin:0px">`;
-          }
-
-          if (member.teacher) {
-            temp += `<p style="color:red">${i + 1}: ★ ${member.nickname}: ${member.score} pts</p></a>`;
-          } else {
-            if (member.score == highestScore) {
-              temp += `<p style="color:gold">${i + 1}: 🎖 ${member.nickname}: ${member.score} pts 🎖<p></a>`;
-            } else {
-              temp += `<p style="">${i + 1}: ${member.nickname}: ${member.score} pts <p></a>`;
-            }
-          }
-          userbox.innerHTML+= temp;
-        }
-      }
-
-      function addActivity() {
-        let title = prompt("Provide an activity title.");
-        if (title == null) return;
-
-        let details = prompt("Enter activity details.\n(What a user must do to earn their points.)");
-        if (details == null) return;
-
-        let value = prompt("Enter activity value.\n(The points a user will receive upon completion.)");
-        if (value == null) return;
-        if (isNaN(Number(value))) {
-          return alert("Aborted! Please provide a number value.");
-        }
-
-        let activity = {
-          title: title,
-          details: details,
-          value: value
-        }
-
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addActivity&classID=${currentClass.id}`);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-        xhr.onload = function() {
-          var responseText = xhr.responseText;
-          location.reload();
-        }
-
-        xhr.send(JSON.stringify(activity));
-      }
-    </script>
-
-    <script type="text/javascript" name="goal-manager">
-      let addButton;
-      let goalBox;
-
-
-
-      function loadGoals() {
-        let goals = currentClass.settings[0].goals;
-
-        goalBox = document.getElementById('goal-box');
-        addButton = document.getElementById('add-goal');
-
-        if (currentUser.teacher) {
-          addButton.style.display = "inline-block"
-          console.log("Teacher, displaying button");
-        } else {
-          console.log("Student, hiding button");
-          addButton.style.display = "none";
-        }
-
-        if (!goals) {
-          return noGoals();
-        }
-
-        if (goals.length > 0) {
-          for (let i = 0; i < goals.length; i++) {
-            let g = goals[i];
-
-            if (g.goal_progress >= g.goal_points) {
-              goalBox.innerHTML += `\<p\>${g.goal_name}: Completed!\<p\>`
-            } else {
-              goalBox.innerHTML += `
+            goalBox.innerHTML += `
                 \<h3 style=\" margin: 18.270; margin-bottom: 0px\"\>${g.goal_name}, (${g.goal_progress} pts / ${g.goal_points} pts)\</h3\>
                 \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style=\"float:left; width: 100%; margin: 22px; margin-bottom: 0px; margin-left: 0px;\"\>\</progress\> \<br\>\<br\>\<br\>
               `
-              //`\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
-            }
-          }
-        } else {
-          noGoals();
-        }
-      }
-
-      function noGoals() {
-        goalBox.innerHTML = "No class goals. Encourage your teacher to add one!";
-      }
-
-      function toggleGoals() {
-        if (goalBox.parentElement.style.display == "block") {
-          goalBox.parentElement.style.display = `none`;
-        } else {
-          goalBox.parentElement.style.display = `block`;
-        }
-      }
-
-      function addGoal() {
-        let goalTitle = prompt("Enter your goal's title.");
-        if (goalTitle == undefined || !goalTitle) {
-          return alert("Failed");
-        }
-
-        let goalTarget = prompt("Enter your goal's required point gain.");
-        if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
-          return alert("Failed");
-        }
-
-        let newGoal = {
-          name: goalTitle,
-          points: goalTarget
-        }
-
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=addGoal&classID=${currentClass.id}`);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-        xhr.onload = function () {
-          let response = xhr.responseText;
-
-          if (response.toLowerCase() == "not found") {
-            alert(`Failed to create goal!`);
-          } else {
-            alert(`Goal created succesfully!`);
+            //`\<p class="goal-title"\>${g.goal_name}   (${g.goal_progress} pts / ${g.goal_points} pts)\</p\> \<progress value="${Math.floor((Number(g.goal_progress) / g.goal_points) * 100)}" max="100" style="width: 100%" class="goal-value"\>\</progress\>\<br\>`
           }
         }
-
-        xhr.send(JSON.stringify(newGoal));
+      } else {
+        noGoals();
       }
-    </script>
+    }
 
-    <script type="text/javascript" name="act-manager">
-      function setActs() {
-        let appName = document.getElementById('appName');
-        appName.innerHTML = `Activity completion requests for "${currentClass.name}"`;
-        for (let i = 0; i < currentClass.approval_pool.length; i++) {
-          let request = currentClass.approval_pool[i];
+    function noGoals() {
+      goalBox.innerHTML = "No class goals. Encourage your teacher to add one!";
+    }
 
-          let row = table.insertRow(1);
-          row.insertCell(0).innerHTML = request.author;
-          row.insertCell(1).innerHTML = request.activity.title;
-          row.insertCell(2).innerHTML = request.activity.details;
-          if (request.img) {
-            if (request.img != "none") {
-              row.insertCell(3).innerHTML = request.story + `<br> <img src="${request.img}" style="max-width:300px;">`;
-            } else {
-              row.insertCell(3).innerHTML = request.story;
-            }
+    function toggleGoals() {
+      if (goalBox.parentElement.style.display == "block") {
+        goalBox.parentElement.style.display = `none`;
+      } else {
+        goalBox.parentElement.style.display = `block`;
+      }
+    }
+
+    function addGoal() {
+      let goalTitle = prompt("Enter your goal's title.");
+      if (goalTitle == undefined || !goalTitle) {
+        return alert("Failed");
+      }
+
+      let goalTarget = prompt("Enter your goal's required point gain.");
+      if (goalTarget == undefined || !goalTarget || isNaN(Number(goalTarget))) {
+        return alert("Failed");
+      }
+
+      let newGoal = {
+        name: goalTitle,
+        points: goalTarget
+      }
+
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=addGoal&classID=${currentClass.id}`);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+      xhr.onload = function () {
+        let response = xhr.responseText;
+
+        if (response.toLowerCase() == "not found") {
+          alert(`Failed to create goal!`);
+        } else {
+          alert(`Goal created succesfully!`);
+        }
+      }
+
+      xhr.send(JSON.stringify(newGoal));
+    }
+  </script>
+
+  <script type="text/javascript" name="act-manager">
+    function setActs() {
+      let appName = document.getElementById('appName');
+      appName.innerHTML = `Activity completion requests for "${currentClass.name}"`;
+      for (let i = 0; i < currentClass.approval_pool.length; i++) {
+        let request = currentClass.approval_pool[i];
+
+        let row = table.insertRow(1);
+        row.insertCell(0).innerHTML = request.author;
+        row.insertCell(1).innerHTML = request.activity.title;
+        row.insertCell(2).innerHTML = request.activity.details;
+        if (request.img) {
+          if (request.img != "none") {
+            row.insertCell(3).innerHTML = request.story + `<br> <img src="${request.img}" style="max-width:300px;">`;
           } else {
             row.insertCell(3).innerHTML = request.story;
           }
-          row.insertCell(4).innerHTML = request.date;
-          row.insertCell(5).innerHTML = `\<button onclick="modifyRequest(${i}, true)"\>Approve\</button\> <button onclick="modifyRequest(${i}, false)"\>Deny\</button\>`;
+        } else {
+          row.insertCell(3).innerHTML = request.story;
+        }
+        row.insertCell(4).innerHTML = request.date;
+        row.insertCell(5).innerHTML = `\<button onclick="modifyRequest(${i}, true)"\>Approve\</button\> <button onclick="modifyRequest(${i}, false)"\>Deny\</button\>`;
 
+      }
+    }
+
+    function modifyRequest(id, approved) {
+      let request = currentClass.approval_pool[id];
+      let user = request.author;
+
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
+
+      xhr.onload = function () {
+        var responseText = xhr.responseText;
+
+        if (responseText == "Created") {
+          location.href = updateQueryStringParameter(url, `mode`, `3`);
         }
       }
+      xhr.send();
 
-      function modifyRequest(id, approved) {
-        let request = currentClass.approval_pool[id];
-        let user = request.author;
+    }
+  </script>
 
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
+  <script type="text/javascript">
+    let myActs = Array();
+    let subsTable = document.getElementById('act-table');
 
-          xhr.onload = function() {
-            var responseText = xhr.responseText;
 
-            if (responseText == "Created") {
-              location.href = updateQueryStringParameter(url, `mode`, `3`);
-            }
+    function setSubs() {
+
+
+      for (let i = 0; i < currentClass.approval_pool.length; i++) {
+        let act = currentClass.approval_pool[i];
+        if (act.author == currentUser.profile.username) {
+          let finAct = {
+            activity: act,
+            index: i
           }
-          xhr.send();
+          myActs.push(finAct);
 
-      }
-    </script>
+          let row = subsTable.insertRow(1);
+          row.insertCell(0).innerHTML = `${act.activity.title}`;
+          row.insertCell(1).innerHTML = `${act.activity.details}`;
+          row.insertCell(2).innerHTML = `${act.activity.value}`;
 
-    <script type="text/javascript">
-      let myActs = Array();
-      let subsTable = document.getElementById('act-table');
-
-
-      function setSubs() {
-
-
-        for (let i = 0; i < currentClass.approval_pool.length; i++) {
-          let act = currentClass.approval_pool[i];
-          if (act.author == currentUser.profile.username) {
-            let finAct = {
-              activity: act,
-              index: i
-            }
-            myActs.push(finAct);
-
-            let row = subsTable.insertRow(1);
-            row.insertCell(0).innerHTML = `${act.activity.title}`;
-            row.insertCell(1).innerHTML = `${act.activity.details}`;
-            row.insertCell(2).innerHTML = `${act.activity.value}`;
-
-            if (finAct.activity.img) {
-              if (finAct.activity.img != "none") {
-                row.insertCell(3).innerHTML = finAct.activity.story + `<br> <img src="${finAct.activity.img}" style="max-width:300px;">`;
-              } else {
-                row.insertCell(3).innerHTML = finAct.activity.story;
-              }
+          if (finAct.activity.img) {
+            if (finAct.activity.img != "none") {
+              row.insertCell(3).innerHTML = finAct.activity.story + `<br> <img src="${finAct.activity.img}" style="max-width:300px;">`;
             } else {
               row.insertCell(3).innerHTML = finAct.activity.story;
             }
-            row.insertCell(4).innerHTML = `<button onClick="sendRetactionRequest(${i})">Retract Request</button><br><button onClick="editExistingRequest(${i})">Edit Request</button>`;
-          }
-        }
-
-        if (myActs.length == 0) {
-          subsTable.style.display = "none";
-          document.getElementById('submissions-title').innerHTML = "No pending submissions, you're all good!"
-        }
-      }
-
-      function sendRetactionRequest(id) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
-
-        xhr.onload = function() {
-          if (xhr.responseText == `OK`) {
-            alert("Request retracted!");
           } else {
-            alert("Attempt failed, sorry bucko...");
+            row.insertCell(3).innerHTML = finAct.activity.story;
           }
-          location.reload();
+          row.insertCell(4).innerHTML = `<button onClick="sendRetactionRequest(${i})">Retract Request</button><br><button onClick="editExistingRequest(${i})">Edit Request</button>`;
         }
-
-        xhr.send();
       }
 
-      function editExistingRequest(id) {
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
+      if (myActs.length == 0) {
+        subsTable.style.display = "none";
+        document.getElementById('submissions-title').innerHTML = "No pending submissions, you're all good!"
+      }
+    }
 
-        xhr.onload = function() {
-          if (xhr.responseText == `OK`) {
-            alert("Request modified!!");
-          } else {
-            alert("Attempt failed, sorry bucko...");
-          }
-          location.reload();
+    function sendRetactionRequest(id) {
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=retractRequest&index=${id}&classId=${currentClass.id}`);
+
+      xhr.onload = function () {
+        if (xhr.responseText == `OK`) {
+          alert("Request retracted!");
+        } else {
+          alert("Attempt failed, sorry bucko...");
         }
-
-        xhr.send();
+        location.reload();
       }
 
-    </script>
-  </body>
+      xhr.send();
+    }
+
+    function editExistingRequest(id) {
+      let xhr = createCORSRequest("POST", `${serverIP}/class?do=editStory&index=${id}&classId=${currentClass.id}&story=${prompt("What do you want to change your story text to?")}`);
+
+      xhr.onload = function () {
+        if (xhr.responseText == `OK`) {
+          alert("Request modified!!");
+        } else {
+          alert("Attempt failed, sorry bucko...");
+        }
+        location.reload();
+      }
+
+      xhr.send();
+    }
+
+  </script>
+</body>
+
 </html>

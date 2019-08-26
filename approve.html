@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Approve requests</title>
+    <script src="info.js" charset="utf-8"></script>
 
     <style media="screen">
       th, td, table {
@@ -72,7 +73,7 @@
 
       let table = document.getElementById('table')
 
-      let xhr = createCORSRequest("GET", `http://18.220.203.155:8080/class?do=getClass&classID=${getParameterByName("id")}`);
+      let xhr = createCORSRequest("GET", `${serverIP}/class?do=getClass&classID=${getParameterByName("id")}`);
 
         xhr.onload = function() {
           var responseText = xhr.responseText;
@@ -129,7 +130,7 @@
         let request = currentClass.approval_pool[id];
         let user = request.author;
 
-        let xhr = createCORSRequest("POST", `http://18.220.203.155:8080/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
+        let xhr = createCORSRequest("POST", `${serverIP}/class?do=modifyRequest&classID=${getParameterByName("id")}&activityID=${id}&approved=${approved}`);
 
           xhr.onload = function() {
             var responseText = xhr.responseText;
@@ -143,6 +144,6 @@
       }
     </script>
 
-    
+
   </body>
 </html>
